@@ -1,0 +1,53 @@
+<UserControl x:Class="DocumentManagement.Views.CorrespondentsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             Background="{StaticResource Gray50Brush}">
+
+    <Grid RowDefinitions="Auto,*">
+        <Border Grid.Row="0" Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,0,0,1"
+                Padding="32,24,32,24">
+            <StackPanel>
+                <TextBlock Text="Correspondents" Style="{StaticResource TitleLargeStyle}" />
+                <TextBlock Text="Manage document correspondents" Style="{StaticResource BodySmallStyle}"
+                          Margin="0,4,0,0" Foreground="{StaticResource Gray600Brush}" />
+            </StackPanel>
+        </Border>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*,320" Padding="32">
+            <Border Grid.Column="0" Background="White" BorderBrush="{StaticResource Gray200Brush}"
+                   BorderThickness="1" CornerRadius="4" Padding="16">
+                <ListBox ItemsSource="{Binding Correspondents}" SelectedItem="{Binding SelectedCorrespondent}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border Padding="12" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,0,0,1">
+                                <Grid ColumnDefinitions="16,*,Auto">
+                                    <Ellipse Grid.Column="0" Width="12" Height="12" Fill="{Binding Color}"
+                                           VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Name}" Margin="12,0,0,0"
+                                             Style="{StaticResource BodySmallStyle}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="2" Text="{Binding DocumentCount}" Style="{StaticResource CaptionStyle}"
+                                             Foreground="{StaticResource Gray600Brush}" VerticalAlignment="Center" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Border>
+
+            <Border Grid.Column="1" Background="White" BorderBrush="{StaticResource Gray200Brush}"
+                   BorderThickness="1" CornerRadius="4" Padding="16" Margin="16,0,0,0">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Edit Correspondent" Style="{StaticResource TitleMediumStyle}" />
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Name" Style="{StaticResource CaptionStyle}" />
+                        <TextBox Text="{Binding SelectedCorrespondent.Name}" Padding="8,6,8,6" Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                    <Button Style="{StaticResource PrimaryButtonStyle}" Height="36" Margin="0,12,0,0">
+                        <TextBlock Text="Save" />
+                    </Button>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>
