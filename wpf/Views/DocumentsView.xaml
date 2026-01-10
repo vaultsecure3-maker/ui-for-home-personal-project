@@ -4,10 +4,72 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              Background="{StaticResource Gray50Brush}">
 
-    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto">
+    <UserControl.Resources>
+        <!-- Document Card Style -->
+        <Style x:Key="DocumentCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Gray200Brush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Margin" Value="8"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="Black" Opacity="0.1" ShadowDepth="2" BlurRadius="8"/>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Effect">
+                        <Setter.Value>
+                            <DropShadowEffect Color="Black" Opacity="0.2" ShadowDepth="4" BlurRadius="16"/>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="RenderTransform">
+                        <Setter.Value>
+                            <TranslateTransform Y="-2"/>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Filter Button Style -->
+        <Style x:Key="FilterButtonStyle" TargetType="Button" BasedOn="{StaticResource OutlineButtonStyle}">
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Gray200Brush}"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource Gray100Brush}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- View Toggle Button Style -->
+        <Style x:Key="ViewToggleStyle" TargetType="ToggleButton">
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Gray200Brush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsChecked" Value="True">
+                    <Setter Property="Background" Value="{StaticResource Blue600Brush}"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource Gray100Brush}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,*,Auto">
         <!-- Header -->
         <Border Grid.Row="0" Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,0,0,1"
-                Padding="32,24,32,24">
+                Padding="32,24">
             <StackPanel>
                 <TextBlock Text="Documents" Style="{StaticResource TitleLargeStyle}" />
                 <TextBlock Text="Browse, search, and manage your document archive" Style="{StaticResource BodySmallStyle}"
@@ -18,39 +80,62 @@
         <!-- Quick Search -->
         <Border Grid.Row="1" Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,0,0,1"
                 Padding="16">
-            <StackPanel Orientation="Horizontal" Spacing="8">
-                <materialDesign:PackIcon Kind="Magnify" Width="20" Height="20" Foreground="{StaticResource Gray400Brush}"
-                                        VerticalAlignment="Center" />
-                <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
-                        Padding="8,6,8,6" Style="{StaticResource TextBoxStyle}"
-                        PlaceholderText="Quick search across all fields..."
-                        Foreground="{StaticResource Gray900Brush}" />
-            </StackPanel>
+            <Border Background="{StaticResource Gray50Brush}" CornerRadius="8" Padding="12">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="Magnify" Width="20" Height="20" 
+                                            Foreground="{StaticResource Gray400Brush}"
+                                            VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
+                            BorderThickness="0" Background="Transparent"
+                            materialDesign:HintAssist.Hint="Quick search across all fields..."
+                            Foreground="{StaticResource Gray900Brush}" 
+                            FontSize="14" VerticalAlignment="Center" MinWidth="300"/>
+                </StackPanel>
+            </Border>
         </Border>
 
         <!-- Controls Bar -->
         <Border Grid.Row="2" Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,0,0,1"
                 Padding="16">
-            <Grid ColumnDefinitions="*,Auto,Auto" Spacing="16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
                 <!-- Left: Filters -->
-                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
-                    <Button Style="{StaticResource OutlineButtonStyle}" Height="36" Padding="12,8,12,8">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
+                    <Button Style="{StaticResource FilterButtonStyle}">
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <materialDesign:PackIcon Kind="FilterVariant" Width="16" Height="16" />
                             <TextBlock Text="Filters" Style="{StaticResource BodySmallStyle}" />
+                            <Border Background="{StaticResource Blue600Brush}" CornerRadius="10" Padding="6,2" Margin="4,0,0,0">
+                                <TextBlock Text="3" Foreground="White" FontSize="10" FontWeight="Bold"/>
+                            </Border>
                         </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource FilterButtonStyle}">
+                        <TextBlock Text="Clear all" Style="{StaticResource BodySmallStyle}" />
                     </Button>
                 </StackPanel>
 
                 <!-- Right: View Toggle & Sort -->
-                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="12">
-                    <ToggleButton Style="{StaticResource MaterialDesignFlatToggleButton}" ToolTip="Card view">
-                        <materialDesign:PackIcon Kind="ViewAgenda" Width="20" Height="20" />
-                    </ToggleButton>
-                    <ToggleButton Style="{StaticResource MaterialDesignFlatToggleButton}" ToolTip="Table view">
-                        <materialDesign:PackIcon Kind="ViewList" Width="20" Height="20" />
-                    </ToggleButton>
-                    <ComboBox Width="180" Padding="8,6,8,6">
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12">
+                    <Border BorderBrush="{StaticResource Gray200Brush}" BorderThickness="1" CornerRadius="4">
+                        <StackPanel Orientation="Horizontal">
+                            <ToggleButton Style="{StaticResource ViewToggleStyle}" IsChecked="True" 
+                                         ToolTip="Card view" BorderThickness="0,0,1,0">
+                                <materialDesign:PackIcon Kind="ViewAgenda" Width="18" Height="18" />
+                            </ToggleButton>
+                            <ToggleButton Style="{StaticResource ViewToggleStyle}" 
+                                         ToolTip="Table view" BorderThickness="0">
+                                <materialDesign:PackIcon Kind="ViewList" Width="18" Height="18" />
+                            </ToggleButton>
+                        </StackPanel>
+                    </Border>
+                    
+                    <ComboBox Width="180" materialDesign:HintAssist.Hint="Sort by"
+                             Style="{StaticResource MaterialDesignComboBox}">
                         <ComboBoxItem>Date (Newest)</ComboBoxItem>
                         <ComboBoxItem>Date (Oldest)</ComboBoxItem>
                         <ComboBoxItem>Title (A-Z)</ComboBoxItem>
@@ -73,12 +158,15 @@
                         <Run Text="documents" />
                     </TextBlock>
                 </StackPanel>
+                <Border Background="{StaticResource Gray200Brush}" CornerRadius="12" Padding="8,4">
+                    <TextBlock Text="Filtered results" Style="{StaticResource CaptionStyle}" FontSize="11"/>
+                </Border>
             </StackPanel>
         </Border>
 
-        <!-- Content Area -->
-        <ScrollViewer Grid.Row="5" Background="{StaticResource Gray50Brush}">
-            <ItemsControl ItemsSource="{Binding Documents}" Margin="24">
+        <!-- Content Area - Card View -->
+        <ScrollViewer Grid.Row="4" Background="{StaticResource Gray50Brush}" Padding="16">
+            <ItemsControl ItemsSource="{Binding Documents}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel Orientation="Horizontal" />
@@ -86,36 +174,111 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border Width="240" Height="300" Margin="8" Background="White"
-                               BorderBrush="{StaticResource Gray200Brush}" BorderThickness="1"
-                               CornerRadius="4" Cursor="Hand">
-                            <Grid RowDefinitions="160,*">
-                                <!-- Thumbnail -->
-                                <Image Grid.Row="0" Source="{Binding ThumbnailUrl}" Stretch="UniformToFill" />
+                        <Border Style="{StaticResource DocumentCardStyle}" Width="280" Height="320">
+                            <Grid RowDefinitions="180,*,Auto">
+                                <!-- Thumbnail with Preview Button -->
+                                <Grid Grid.Row="0">
+                                    <Image Source="{Binding ThumbnailUrl}" Stretch="UniformToFill" 
+                                          ClipToBounds="True"/>
+                                    <Border Background="Black" Opacity="0.3" Visibility="Hidden" x:Name="ImageOverlay"/>
+                                    <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
+                                           Background="{StaticResource WhiteBrush}" Foreground="{StaticResource Gray700Brush}"
+                                           Width="32" Height="32" Margin="8" HorizontalAlignment="Left" VerticalAlignment="Top"
+                                           Visibility="Hidden" x:Name="PreviewButton">
+                                        <materialDesign:PackIcon Kind="Eye" Width="16" Height="16"/>
+                                    </Button>
+                                    <Border Background="{StaticResource WhiteBrush}" CornerRadius="4" Padding="6,3"
+                                           HorizontalAlignment="Right" VerticalAlignment="Top" Margin="8"
+                                           Opacity="0.9">
+                                        <StackPanel Orientation="Horizontal" Spacing="4">
+                                            <materialDesign:PackIcon Kind="FileDocument" Width="12" Height="12" 
+                                                                    Foreground="{StaticResource Gray600Brush}"/>
+                                            <TextBlock Text="{Binding PageCount}" FontSize="10" 
+                                                      Foreground="{StaticResource Gray600Brush}"/>
+                                            <TextBlock Text="pages" FontSize="10" 
+                                                      Foreground="{StaticResource Gray600Brush}"/>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+
                                 <!-- Content -->
-                                <StackPanel Grid.Row="1" Padding="12">
-                                    <TextBlock Text="{Binding Title}" Style="{StaticResource BodySmallStyle}"
+                                <StackPanel Grid.Row="1" Padding="16,12">
+                                    <TextBlock Text="{Binding Title}" Style="{StaticResource BodyLargeStyle}"
                                              FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
-                                             MaxHeight="40" TextWrapping="Wrap" />
-                                    <TextBlock Margin="0,8,0,0" Style="{StaticResource CaptionStyle}">
-                                        <Run Text="{Binding Created, StringFormat='MMM dd, yyyy'}" />
-                                    </TextBlock>
-                                    <ItemsControl ItemsSource="{Binding Tags}" Margin="0,8,0,0">
-                                        <ItemsControl.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <WrapPanel />
-                                            </ItemsPanelTemplate>
-                                        </ItemsControl.ItemsPanel>
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <Border Background="{Binding Color}" CornerRadius="2" Padding="4,2,4,2" Margin="2">
-                                                    <TextBlock Text="{Binding Name}" FontSize="10" Foreground="White" />
-                                                </Border>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
+                                             MaxHeight="44" TextWrapping="Wrap" LineHeight="22"/>
+                                    
+                                    <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,8,0,0">
+                                        <materialDesign:PackIcon Kind="Calendar" Width="14" Height="14"
+                                                                Foreground="{StaticResource Gray400Brush}" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding Created, StringFormat='MMM dd, yyyy'}" 
+                                                  Style="{StaticResource CaptionStyle}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                    
+                                    <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,4,0,0"
+                                               Visibility="{Binding Correspondent, Converter={StaticResource NullToVisibilityConverter}}">
+                                        <materialDesign:PackIcon Kind="Account" Width="14" Height="14"
+                                                                Foreground="{StaticResource Gray400Brush}" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding Correspondent}" Style="{StaticResource CaptionStyle}" 
+                                                  VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                    </StackPanel>
                                 </StackPanel>
+
+                                <!-- Tags -->
+                                <ItemsControl Grid.Row="2" ItemsSource="{Binding Tags}" Margin="16,0,16,16">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Background="{Binding Color}" CornerRadius="12" 
+                                                   Padding="8,4" Margin="2">
+                                                <TextBlock Text="{Binding Name}" FontSize="11" 
+                                                          Foreground="White" FontWeight="Medium"/>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
                             </Grid>
+                            
+                            <!-- Hover Triggers -->
+                            <Border.Triggers>
+                                <EventTrigger RoutedEvent="MouseEnter">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="ImageOverlay" 
+                                                           Storyboard.TargetProperty="Opacity"
+                                                           To="0.3" Duration="0:0:0.2"/>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ImageOverlay" 
+                                                                         Storyboard.TargetProperty="Visibility">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PreviewButton" 
+                                                                         Storyboard.TargetProperty="Visibility">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="ImageOverlay" 
+                                                           Storyboard.TargetProperty="Opacity"
+                                                           To="0" Duration="0:0:0.2"/>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ImageOverlay" 
+                                                                         Storyboard.TargetProperty="Visibility">
+                                                <DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="{x:Static Visibility.Hidden}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PreviewButton" 
+                                                                         Storyboard.TargetProperty="Visibility">
+                                                <DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="{x:Static Visibility.Hidden}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Border.Triggers>
                         </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
@@ -123,27 +286,49 @@
         </ScrollViewer>
 
         <!-- Pagination -->
-        <Border Grid.Row="6" Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,1,0,0"
-                Padding="24,12,24,12">
-            <Grid ColumnDefinitions="*,Auto,*">
+        <Border Grid.Row="5" Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,1,0,0"
+                Padding="24,16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock Grid.Column="0" VerticalAlignment="Center" Style="{StaticResource BodySmallStyle}">
+                    <Run Text="Showing 1-20 of"/>
+                    <Run Text="{Binding Documents.Count}" FontWeight="Bold"/>
+                    <Run Text="documents"/>
+                </TextBlock>
+                
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="16">
-                    <Button Style="{StaticResource OutlineButtonStyle}" Height="32" Padding="8">
-                        <StackPanel Orientation="Horizontal" Spacing="4">
+                    <Button Style="{StaticResource OutlineButtonStyle}" Height="36" Padding="12,8">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
                             <materialDesign:PackIcon Kind="ChevronLeft" Width="16" Height="16" />
-                            <TextBlock Text="Previous" />
+                            <TextBlock Text="Previous" FontSize="13"/>
                         </StackPanel>
                     </Button>
-                    <TextBlock VerticalAlignment="Center" Style="{StaticResource BodySmallStyle}">
-                        <Run Text="Page " />
-                        <Run Text="{Binding CurrentPage}" FontWeight="Bold" />
-                        <Run Text=" of 5" />
+                    <TextBlock VerticalAlignment="Center" Style="{StaticResource BodySmallStyle}" Margin="8,0">
+                        <Run Text="Page"/>
+                        <Run Text="{Binding CurrentPage}" FontWeight="Bold"/>
+                        <Run Text="of 5"/>
                     </TextBlock>
-                    <Button Style="{StaticResource OutlineButtonStyle}" Height="32" Padding="8">
-                        <StackPanel Orientation="Horizontal" Spacing="4">
-                            <TextBlock Text="Next" />
+                    <Button Style="{StaticResource OutlineButtonStyle}" Height="36" Padding="12,8">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <TextBlock Text="Next" FontSize="13"/>
                             <materialDesign:PackIcon Kind="ChevronRight" Width="16" Height="16" />
                         </StackPanel>
                     </Button>
+                </StackPanel>
+                
+                <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                    <TextBlock Text="Per page:" VerticalAlignment="Center" Style="{StaticResource BodySmallStyle}"/>
+                    <ComboBox Width="80" SelectedIndex="1">
+                        <ComboBoxItem>10</ComboBoxItem>
+                        <ComboBoxItem>20</ComboBoxItem>
+                        <ComboBoxItem>50</ComboBoxItem>
+                        <ComboBoxItem>100</ComboBoxItem>
+                    </ComboBox>
                 </StackPanel>
             </Grid>
         </Border>

@@ -3,7 +3,7 @@
 
     <!-- Typography Styles -->
     <Style x:Key="TitleLargeStyle" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="20" />
+        <Setter Property="FontSize" Value="24" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{StaticResource Gray900Brush}" />
     </Style>
@@ -16,40 +16,73 @@
 
     <Style x:Key="BodyLargeStyle" TargetType="TextBlock">
         <Setter Property="FontSize" Value="14" />
-        <Setter Property="FontWeight" Value="Regular" />
+        <Setter Property="FontWeight" Value="Normal" />
         <Setter Property="Foreground" Value="{StaticResource Gray900Brush}" />
     </Style>
 
     <Style x:Key="BodySmallStyle" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="12" />
-        <Setter Property="FontWeight" Value="Regular" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontWeight" Value="Normal" />
         <Setter Property="Foreground" Value="{StaticResource Gray600Brush}" />
     </Style>
 
     <Style x:Key="CaptionStyle" TargetType="TextBlock">
         <Setter Property="FontSize" Value="12" />
-        <Setter Property="FontWeight" Value="Regular" />
+        <Setter Property="FontWeight" Value="Normal" />
         <Setter Property="Foreground" Value="{StaticResource Gray600Brush}" />
+    </Style>
+
+    <!-- Card Styles -->
+    <Style x:Key="CardStyle" TargetType="Border">
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Gray200Brush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect Color="Black" Opacity="0.08" ShadowDepth="1" BlurRadius="4"/>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="CardHoverStyle" TargetType="Border" BasedOn="{StaticResource CardStyle}">
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Effect">
+                    <Setter.Value>
+                        <DropShadowEffect Color="Black" Opacity="0.15" ShadowDepth="4" BlurRadius="12"/>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <!-- Input Styles -->
     <Style x:Key="TextBoxStyle" TargetType="TextBox">
         <Setter Property="FontSize" Value="14" />
-        <Setter Property="Padding" Value="8,6,8,6" />
+        <Setter Property="Padding" Value="12,8" />
         <Setter Property="BorderBrush" Value="{StaticResource Gray200Brush}" />
         <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="6" />
         <Setter Property="Background" Value="White" />
         <Setter Property="Foreground" Value="{StaticResource Gray900Brush}" />
+        <Style.Triggers>
+            <Trigger Property="IsFocused" Value="True">
+                <Setter Property="BorderBrush" Value="{StaticResource Blue600Brush}"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <!-- Button Styles -->
     <Style x:Key="PrimaryButtonStyle" TargetType="Button">
         <Setter Property="FontSize" Value="14" />
-        <Setter Property="Padding" Value="16,8,16,8" />
+        <Setter Property="Padding" Value="16,10" />
         <Setter Property="Background" Value="{StaticResource Blue600Brush}" />
         <Setter Property="Foreground" Value="White" />
         <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="6" />
         <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FontWeight" Value="Medium"/>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{StaticResource Blue700Brush}" />
@@ -59,12 +92,14 @@
 
     <Style x:Key="OutlineButtonStyle" TargetType="Button">
         <Setter Property="FontSize" Value="14" />
-        <Setter Property="Padding" Value="16,8,16,8" />
+        <Setter Property="Padding" Value="16,10" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{StaticResource Gray700Brush}" />
         <Setter Property="BorderBrush" Value="{StaticResource Gray200Brush}" />
         <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="6" />
         <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FontWeight" Value="Medium"/>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{StaticResource Gray100Brush}" />
@@ -74,14 +109,30 @@
 
     <Style x:Key="GhostButtonStyle" TargetType="Button">
         <Setter Property="FontSize" Value="14" />
-        <Setter Property="Padding" Value="8,8,8,8" />
+        <Setter Property="Padding" Value="12,8" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{StaticResource Gray700Brush}" />
         <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="6" />
         <Setter Property="Cursor" Value="Hand" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{StaticResource Gray100Brush}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Icon Button Style -->
+    <Style x:Key="IconButtonStyle" TargetType="Button">
+        <Setter Property="Width" Value="40"/>
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="CornerRadius" Value="20"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource Gray100Brush}"/>
             </Trigger>
         </Style.Triggers>
     </Style>

@@ -13,7 +13,7 @@ namespace DocumentManagement.ViewModels
         private BaseViewModel? currentViewModel;
 
         [ObservableProperty]
-        private bool sidebarExpanded = false;
+        private bool sidebarExpanded = true;
 
         [ObservableProperty]
         private string currentPageTitle = "Documents";
@@ -25,6 +25,9 @@ namespace DocumentManagement.ViewModels
         {
             _navigationService = navigationService;
             _dialogService = dialogService;
+            
+            // Initialize with Documents view
+            NavigateToDocuments();
         }
 
         [RelayCommand]
@@ -32,6 +35,7 @@ namespace DocumentManagement.ViewModels
         {
             CurrentPageTitle = "Documents";
             CurrentPageDescription = "Browse, search, and manage your document archive";
+            // In a real implementation, you would set CurrentViewModel to DocumentsViewModel
         }
 
         [RelayCommand]

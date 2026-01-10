@@ -2,33 +2,37 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        Title="Paperless-NGX" Height="768" Width="1024"
+        Title="Paperless-NGX" Height="900" Width="1400"
         Background="{StaticResource Gray50Brush}"
-        TextElement.Foreground="{DynamicResource MaterialDesignBody}">
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        WindowStartupLocation="CenterScreen">
 
     <Grid RowDefinitions="64,*">
         <!-- Header -->
-        <Border Grid.Row="0" Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,0,0,1">
+        <Border Grid.Row="0" Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,0,0,1"
+                Effect="{StaticResource MaterialDesignShadowDepth1}">
             <Grid ColumnDefinitions="*,Auto,*">
                 <!-- Left: Sync Status -->
-                <Button Grid.Column="0" HorizontalAlignment="Left" Style="{StaticResource GhostButtonStyle}"
-                        Margin="24,0,0,0">
+                <Button Grid.Column="0" HorizontalAlignment="Left" Style="{StaticResource GhostButtonStyle}" 
+                        Margin="24,0,0,0" ToolTip="Last sync: 2 minutes ago">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <materialDesign:PackIcon Kind="Cloud" Width="16" Height="16" Foreground="{StaticResource Green600Brush}" />
-                        <TextBlock Text="Synced 2m ago" Style="{StaticResource CaptionStyle}" VerticalAlignment="Center" />
+                        <TextBlock Text="Synced 2m ago" Style="{StaticResource CaptionStyle}" VerticalAlignment="Center" 
+                                  Foreground="{StaticResource Gray600Brush}"/>
                     </StackPanel>
                 </Button>
 
                 <!-- Center: Title -->
                 <TextBlock Grid.Column="1" Text="Paperless-NGX" Style="{StaticResource TitleMediumStyle}"
-                          VerticalAlignment="Center" />
+                          VerticalAlignment="Center" FontWeight="Bold" />
 
                 <!-- Right: Logout -->
                 <Button Grid.Column="2" HorizontalAlignment="Right" Style="{StaticResource GhostButtonStyle}"
                         Margin="0,0,24,0" Command="{Binding LogoutCommand}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <materialDesign:PackIcon Kind="Logout" Width="16" Height="16" />
-                        <TextBlock Text="Logout" Style="{StaticResource BodySmallStyle}" VerticalAlignment="Center" />
+                        <TextBlock Text="Logout" Style="{StaticResource BodySmallStyle}" VerticalAlignment="Center" 
+                                  Foreground="{StaticResource Gray700Brush}"/>
                     </StackPanel>
                 </Button>
             </Grid>
@@ -37,57 +41,65 @@
         <!-- Main Content -->
         <Grid Grid.Row="1" ColumnDefinitions="Auto,*">
             <!-- Sidebar -->
-            <Border Grid.Column="0" Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,0,1,0">
+            <Border Grid.Column="0" Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,0,1,0"
+                    Effect="{StaticResource MaterialDesignShadowDepth1}">
                 <Grid Width="{Binding SidebarExpanded, Converter={StaticResource BoolToValueConverter}, ConverterParameter='320;80'}"
-                      RowDefinitions="*,Auto">
+                      RowDefinitions="Auto,*,Auto">
+
+                    <!-- Toggle Button -->
+                    <Button Grid.Row="0" Style="{StaticResource IconButtonStyle}" Margin="20,16"
+                           Command="{Binding ToggleSidebarCommand}" HorizontalAlignment="Left">
+                        <materialDesign:PackIcon Kind="{Binding SidebarExpanded, Converter={StaticResource BoolToValueConverter}, ConverterParameter='ChevronLeft;Menu'}" 
+                                                Width="20" Height="20" />
+                    </Button>
 
                     <!-- Navigation Items -->
-                    <StackPanel Grid.Row="0" Spacing="8" Padding="8">
-                        <Button Style="{StaticResource GhostButtonStyle}" Height="56"
-                               Command="{Binding NavigateToDocumentsCommand}">
-                            <StackPanel Orientation="Horizontal" Spacing="12">
+                    <StackPanel Grid.Row="1" Spacing="4" Padding="16,8">
+                        <Button Style="{StaticResource GhostButtonStyle}" Height="48" HorizontalContentAlignment="Left"
+                               Command="{Binding NavigateToDocumentsCommand}" Background="{StaticResource Blue50Brush}">
+                            <StackPanel Orientation="Horizontal" Spacing="16">
                                 <materialDesign:PackIcon Kind="FileDocument" Width="24" Height="24" />
-                                <TextBlock Text="Documents" Style="{StaticResource BodySmallStyle}"
+                                <TextBlock Text="Documents" Style="{StaticResource BodyLargeStyle}" FontWeight="Medium"
                                           Visibility="{Binding SidebarExpanded, Converter={StaticResource BoolToVisibilityConverter}}"
                                           VerticalAlignment="Center" />
                             </StackPanel>
                         </Button>
 
-                        <Button Style="{StaticResource GhostButtonStyle}" Height="56"
+                        <Button Style="{StaticResource GhostButtonStyle}" Height="48" HorizontalContentAlignment="Left"
                                Command="{Binding NavigateToUploadCommand}">
-                            <StackPanel Orientation="Horizontal" Spacing="12">
+                            <StackPanel Orientation="Horizontal" Spacing="16">
                                 <materialDesign:PackIcon Kind="Upload" Width="24" Height="24" />
-                                <TextBlock Text="Upload" Style="{StaticResource BodySmallStyle}"
+                                <TextBlock Text="Upload" Style="{StaticResource BodyLargeStyle}" FontWeight="Medium"
                                           Visibility="{Binding SidebarExpanded, Converter={StaticResource BoolToVisibilityConverter}}"
                                           VerticalAlignment="Center" />
                             </StackPanel>
                         </Button>
 
-                        <Button Style="{StaticResource GhostButtonStyle}" Height="56"
+                        <Button Style="{StaticResource GhostButtonStyle}" Height="48" HorizontalContentAlignment="Left"
                                Command="{Binding NavigateToTagsCommand}">
-                            <StackPanel Orientation="Horizontal" Spacing="12">
+                            <StackPanel Orientation="Horizontal" Spacing="16">
                                 <materialDesign:PackIcon Kind="Tag" Width="24" Height="24" />
-                                <TextBlock Text="Tags" Style="{StaticResource BodySmallStyle}"
+                                <TextBlock Text="Tags" Style="{StaticResource BodyLargeStyle}" FontWeight="Medium"
                                           Visibility="{Binding SidebarExpanded, Converter={StaticResource BoolToVisibilityConverter}}"
                                           VerticalAlignment="Center" />
                             </StackPanel>
                         </Button>
 
-                        <Button Style="{StaticResource GhostButtonStyle}" Height="56"
+                        <Button Style="{StaticResource GhostButtonStyle}" Height="48" HorizontalContentAlignment="Left"
                                Command="{Binding NavigateToCorrespondentsCommand}">
-                            <StackPanel Orientation="Horizontal" Spacing="12">
+                            <StackPanel Orientation="Horizontal" Spacing="16">
                                 <materialDesign:PackIcon Kind="Building" Width="24" Height="24" />
-                                <TextBlock Text="Correspondents" Style="{StaticResource BodySmallStyle}"
+                                <TextBlock Text="Correspondents" Style="{StaticResource BodyLargeStyle}" FontWeight="Medium"
                                           Visibility="{Binding SidebarExpanded, Converter={StaticResource BoolToVisibilityConverter}}"
                                           VerticalAlignment="Center" />
                             </StackPanel>
                         </Button>
 
-                        <Button Style="{StaticResource GhostButtonStyle}" Height="56"
+                        <Button Style="{StaticResource GhostButtonStyle}" Height="48" HorizontalContentAlignment="Left"
                                Command="{Binding NavigateToDocumentTypesCommand}">
-                            <StackPanel Orientation="Horizontal" Spacing="12">
+                            <StackPanel Orientation="Horizontal" Spacing="16">
                                 <materialDesign:PackIcon Kind="FileMultiple" Width="24" Height="24" />
-                                <TextBlock Text="Document Types" Style="{StaticResource BodySmallStyle}"
+                                <TextBlock Text="Document Types" Style="{StaticResource BodyLargeStyle}" FontWeight="Medium"
                                           Visibility="{Binding SidebarExpanded, Converter={StaticResource BoolToVisibilityConverter}}"
                                           VerticalAlignment="Center" />
                             </StackPanel>
@@ -95,11 +107,11 @@
                     </StackPanel>
 
                     <!-- Settings at Bottom -->
-                    <Button Grid.Row="1" Style="{StaticResource GhostButtonStyle}" Height="56"
-                           Command="{Binding NavigateToSettingsCommand}">
-                        <StackPanel Orientation="Horizontal" Spacing="12">
+                    <Button Grid.Row="2" Style="{StaticResource GhostButtonStyle}" Height="48" HorizontalContentAlignment="Left"
+                           Command="{Binding NavigateToSettingsCommand}" Margin="16,8,16,16">
+                        <StackPanel Orientation="Horizontal" Spacing="16">
                             <materialDesign:PackIcon Kind="Cog" Width="24" Height="24" />
-                            <TextBlock Text="Settings" Style="{StaticResource BodySmallStyle}"
+                            <TextBlock Text="Settings" Style="{StaticResource BodyLargeStyle}" FontWeight="Medium"
                                       Visibility="{Binding SidebarExpanded, Converter={StaticResource BoolToVisibilityConverter}}"
                                       VerticalAlignment="Center" />
                         </StackPanel>
@@ -108,7 +120,7 @@
             </Border>
 
             <!-- Content Area -->
-            <Grid Grid.Column="1" Background="{StaticResource Gray50Brush}" />
+            <ContentPresenter Grid.Column="1" Content="{Binding CurrentViewModel}" Background="{StaticResource Gray50Brush}" />
         </Grid>
     </Grid>
 </Window>
