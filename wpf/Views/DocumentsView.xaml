@@ -64,9 +64,33 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+
+        <!-- Filter Input Style -->
+        <Style x:Key="FilterInputStyle" TargetType="TextBox" BasedOn="{StaticResource TextBoxStyle}">
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="32,8,8,8"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+
+        <!-- Filter ComboBox Style -->
+        <Style x:Key="FilterComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Gray200Brush}"/>
+            <Setter Property="Background" Value="White"/>
+        </Style>
+
+        <!-- Filter Chip Style -->
+        <Style x:Key="FilterChipStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource Gray200Brush}"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="10,4"/>
+            <Setter Property="Margin" Value="4,2"/>
+        </Style>
     </UserControl.Resources>
 
-    <Grid RowDefinitions="Auto,Auto,Auto,Auto,*,Auto">
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,*,Auto">
         <!-- Header -->
         <Border Grid.Row="0" Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,0,0,1"
                 Padding="32,24">
@@ -80,18 +104,28 @@
         <!-- Quick Search -->
         <Border Grid.Row="1" Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,0,0,1"
                 Padding="16">
-            <Border Background="{StaticResource Gray50Brush}" CornerRadius="8" Padding="12">
-                <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="Magnify" Width="20" Height="20" 
-                                            Foreground="{StaticResource Gray400Brush}"
-                                            VerticalAlignment="Center" Margin="0,0,8,0" />
-                    <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
-                            BorderThickness="0" Background="Transparent"
-                            materialDesign:HintAssist.Hint="Quick search across all fields..."
-                            Foreground="{StaticResource Gray900Brush}" 
-                            FontSize="14" VerticalAlignment="Center" MinWidth="300"/>
-                </StackPanel>
-            </Border>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <materialDesign:PackIcon Grid.Column="0" Kind="Magnify" Width="20" Height="20"
+                                        Foreground="{StaticResource Gray400Brush}"
+                                        VerticalAlignment="Center" Margin="0,0,8,0" />
+                <TextBox Grid.Column="1" Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
+                        BorderThickness="0" Background="Transparent"
+                        materialDesign:HintAssist.Hint="Quick search across all fields..."
+                        Foreground="{StaticResource Gray900Brush}"
+                        FontSize="14" VerticalAlignment="Center"/>
+                <Button Grid.Column="2" Style="{StaticResource GhostButtonStyle}"
+                        Width="32" Height="32" Padding="4"
+                        Visibility="{Binding SearchQuery, Converter={StaticResource NullToVisibilityConverter}}"
+                        Command="{Binding ClearSearchCommand}">
+                    <materialDesign:PackIcon Kind="Close" Width="16" Height="16" />
+                </Button>
+            </Grid>
         </Border>
 
         <!-- Controls Bar -->
@@ -102,19 +136,21 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                
+
                 <!-- Left: Filters -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
-                    <Button Style="{StaticResource FilterButtonStyle}">
+                    <Button Style="{StaticResource FilterButtonStyle}" Command="{Binding ToggleFiltersCommand}">
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <materialDesign:PackIcon Kind="FilterVariant" Width="16" Height="16" />
                             <TextBlock Text="Filters" Style="{StaticResource BodySmallStyle}" />
-                            <Border Background="{StaticResource Blue600Brush}" CornerRadius="10" Padding="6,2" Margin="4,0,0,0">
-                                <TextBlock Text="3" Foreground="White" FontSize="10" FontWeight="Bold"/>
+                            <Border Background="{StaticResource Blue600Brush}" CornerRadius="10" Padding="6,2" Margin="4,0,0,0"
+                                   Visibility="{Binding HasActiveFilters, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <TextBlock Text="{Binding ActiveFilterCount}" Foreground="White" FontSize="10" FontWeight="Bold"/>
                             </Border>
                         </StackPanel>
                     </Button>
-                    <Button Style="{StaticResource FilterButtonStyle}">
+                    <Button Style="{StaticResource FilterButtonStyle}" Command="{Binding ClearFiltersCommand}"
+                           Visibility="{Binding HasActiveFilters, Converter={StaticResource BoolToVisibilityConverter}}">
                         <TextBlock Text="Clear all" Style="{StaticResource BodySmallStyle}" />
                     </Button>
                 </StackPanel>
@@ -123,30 +159,147 @@
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12">
                     <Border BorderBrush="{StaticResource Gray200Brush}" BorderThickness="1" CornerRadius="4">
                         <StackPanel Orientation="Horizontal">
-                            <ToggleButton Style="{StaticResource ViewToggleStyle}" IsChecked="True" 
+                            <ToggleButton Style="{StaticResource ViewToggleStyle}"
+                                         IsChecked="{Binding IsCardView}"
                                          ToolTip="Card view" BorderThickness="0,0,1,0">
                                 <materialDesign:PackIcon Kind="ViewAgenda" Width="18" Height="18" />
                             </ToggleButton>
-                            <ToggleButton Style="{StaticResource ViewToggleStyle}" 
+                            <ToggleButton Style="{StaticResource ViewToggleStyle}"
+                                         IsChecked="{Binding IsTableView}"
                                          ToolTip="Table view" BorderThickness="0">
                                 <materialDesign:PackIcon Kind="ViewList" Width="18" Height="18" />
                             </ToggleButton>
                         </StackPanel>
                     </Border>
-                    
-                    <ComboBox Width="180" materialDesign:HintAssist.Hint="Sort by"
-                             Style="{StaticResource MaterialDesignComboBox}">
-                        <ComboBoxItem>Date (Newest)</ComboBoxItem>
-                        <ComboBoxItem>Date (Oldest)</ComboBoxItem>
-                        <ComboBoxItem>Title (A-Z)</ComboBoxItem>
-                        <ComboBoxItem>Title (Z-A)</ComboBoxItem>
+
+                    <ComboBox Width="180" SelectedValue="{Binding SortOrder}"
+                             Style="{StaticResource FilterComboBoxStyle}">
+                        <ComboBoxItem Content="Date (Newest)" Tag="date-newest"/>
+                        <ComboBoxItem Content="Date (Oldest)" Tag="date-oldest"/>
+                        <ComboBoxItem Content="Title (A-Z)" Tag="title-asc"/>
+                        <ComboBoxItem Content="Title (Z-A)" Tag="title-desc"/>
+                    </ComboBox>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Collapsible Filter Bar -->
+        <Border Grid.Row="3" Background="{StaticResource Gray50Brush}"
+                BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,0,0,1"
+                Padding="16"
+                Visibility="{Binding ShowFilters, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Keyword Search -->
+                <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                    <TextBlock Text="Contains Word" Style="{StaticResource CaptionStyle}"
+                              FontWeight="Medium" Foreground="{StaticResource Gray700Brush}" Margin="0,0,0,8"/>
+                    <Grid>
+                        <materialDesign:PackIcon Kind="Magnify" Width="16" Height="16"
+                                                Foreground="{StaticResource Gray400Brush}"
+                                                VerticalAlignment="Center" HorizontalAlignment="Left"
+                                                Margin="10,0,0,0"/>
+                        <TextBox Text="{Binding KeywordSearch, UpdateSourceTrigger=PropertyChanged}"
+                                Style="{StaticResource FilterInputStyle}"
+                                materialDesign:HintAssist.Hint="Search in content..."/>
+                        <Button Style="{StaticResource GhostButtonStyle}"
+                               Width="24" Height="24" Padding="2"
+                               HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,6,0"
+                               Visibility="{Binding KeywordSearch, Converter={StaticResource NullToVisibilityConverter}}"
+                               Command="{Binding ClearKeywordSearchCommand}">
+                            <materialDesign:PackIcon Kind="Close" Width="12" Height="12" />
+                        </Button>
+                    </Grid>
+                </StackPanel>
+
+                <!-- Tags Filter -->
+                <StackPanel Grid.Column="1" Margin="8,0">
+                    <TextBlock Text="Tags" Style="{StaticResource CaptionStyle}"
+                              FontWeight="Medium" Foreground="{StaticResource Gray700Brush}" Margin="0,0,0,8"/>
+                    <ComboBox Style="{StaticResource FilterComboBoxStyle}"
+                             ItemsSource="{Binding AvailableTags}"
+                             DisplayMemberPath="Name"
+                             SelectedValuePath="Id"
+                             materialDesign:HintAssist.Hint="Select tags...">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <materialDesign:PackIcon Kind="Check" Width="16" Height="16"
+                                                            Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    <Ellipse Width="12" Height="12" Fill="{Binding Color}"/>
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding DocumentCount}"
+                                              Style="{StaticResource CaptionStyle}"
+                                              Foreground="{StaticResource Gray500Brush}"
+                                              VerticalAlignment="Center" Margin="4,0,0,0"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </StackPanel>
+
+                <!-- Correspondents Filter -->
+                <StackPanel Grid.Column="2" Margin="8,0">
+                    <TextBlock Text="Correspondents" Style="{StaticResource CaptionStyle}"
+                              FontWeight="Medium" Foreground="{StaticResource Gray700Brush}" Margin="0,0,0,8"/>
+                    <ComboBox Style="{StaticResource FilterComboBoxStyle}"
+                             ItemsSource="{Binding AvailableCorrespondents}"
+                             DisplayMemberPath="Name"
+                             SelectedValuePath="Id"
+                             materialDesign:HintAssist.Hint="Select correspondents...">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <materialDesign:PackIcon Kind="Check" Width="16" Height="16"
+                                                            Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    <Ellipse Width="12" Height="12" Fill="{Binding Color}"/>
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding DocumentCount}"
+                                              Style="{StaticResource CaptionStyle}"
+                                              Foreground="{StaticResource Gray500Brush}"
+                                              VerticalAlignment="Center" Margin="4,0,0,0"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </StackPanel>
+
+                <!-- Document Types Filter -->
+                <StackPanel Grid.Column="3" Margin="8,0,0,0">
+                    <TextBlock Text="Document Types" Style="{StaticResource CaptionStyle}"
+                              FontWeight="Medium" Foreground="{StaticResource Gray700Brush}" Margin="0,0,0,8"/>
+                    <ComboBox Style="{StaticResource FilterComboBoxStyle}"
+                             ItemsSource="{Binding AvailableDocumentTypes}"
+                             DisplayMemberPath="Name"
+                             SelectedValuePath="Id"
+                             materialDesign:HintAssist.Hint="Select types...">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <materialDesign:PackIcon Kind="Check" Width="16" Height="16"
+                                                            Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    <Ellipse Width="12" Height="12" Fill="{Binding Color}"/>
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding DocumentCount}"
+                                              Style="{StaticResource CaptionStyle}"
+                                              Foreground="{StaticResource Gray500Brush}"
+                                              VerticalAlignment="Center" Margin="4,0,0,0"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
                     </ComboBox>
                 </StackPanel>
             </Grid>
         </Border>
 
         <!-- Stats Bar -->
-        <Border Grid.Row="3" Background="{StaticResource Gray50Brush}"
+        <Border Grid.Row="4" Background="{StaticResource Gray50Brush}"
                 BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,0,0,1"
                 Padding="16">
             <StackPanel Orientation="Horizontal" Spacing="24">
@@ -154,18 +307,58 @@
                     <materialDesign:PackIcon Kind="FileDocument" Width="16" Height="16"
                                             Foreground="{StaticResource Gray600Brush}" VerticalAlignment="Center" />
                     <TextBlock Style="{StaticResource BodySmallStyle}">
-                        <Run Text="{Binding Documents.Count}" FontWeight="Bold" Foreground="{StaticResource Gray900Brush}" />
+                        <Run Text="{Binding FilteredDocumentCount}" FontWeight="Bold" Foreground="{StaticResource Gray900Brush}" />
                         <Run Text="documents" />
+                        <Run Text="{Binding FilteredFromText}" Foreground="{StaticResource Gray600Brush}"/>
                     </TextBlock>
                 </StackPanel>
-                <Border Background="{StaticResource Gray200Brush}" CornerRadius="12" Padding="8,4">
-                    <TextBlock Text="Filtered results" Style="{StaticResource CaptionStyle}" FontSize="11"/>
+                <Border Background="{StaticResource Gray200Brush}" CornerRadius="12" Padding="8,4"
+                       Visibility="{Binding HasActiveFilters, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <TextBlock Style="{StaticResource CaptionStyle}" FontSize="11">
+                        <Run Text="{Binding SearchQuery, Converter={StaticResource NullToVisibilityConverter}}" />
+                        <Run Text="Quick search active" Visibility="{Binding SearchQuery, Converter={StaticResource NullToVisibilityConverter}}"/>
+                        <Run Text=" • " Visibility="{Binding ShowFilterSeparator, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                        <Run Text="{Binding ActiveFilterCount}" />
+                        <Run Text="filter" Visibility="{Binding HasActiveFilters, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                        <Run Text="s" Visibility="{Binding HasMultipleFilters, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                    </TextBlock>
                 </Border>
             </StackPanel>
         </Border>
 
+        <!-- Active Filter Chips -->
+        <Border Grid.Row="5" Background="{StaticResource Gray50Brush}"
+                BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,0,0,1"
+                Padding="12"
+                Visibility="{Binding HasActiveFilters, Converter={StaticResource BoolToVisibilityConverter}}">
+            <ItemsControl ItemsSource="{Binding ActiveFilterChips}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource FilterChipStyle}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="{Binding Label}" Style="{StaticResource CaptionStyle}"
+                                          Foreground="{StaticResource Gray700Brush}" VerticalAlignment="Center"/>
+                                <Button Style="{StaticResource GhostButtonStyle}"
+                                       Width="16" Height="16" Padding="0"
+                                       Command="{Binding RemoveCommand}"
+                                       Background="{StaticResource Gray300Brush}"
+                                       CornerRadius="8">
+                                    <materialDesign:PackIcon Kind="Close" Width="10" Height="10" />
+                                </Button>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Border>
+
         <!-- Content Area - Card View -->
-        <ScrollViewer Grid.Row="4" Background="{StaticResource Gray50Brush}" Padding="16">
+        <ScrollViewer Grid.Row="6" Background="{StaticResource Gray50Brush}" Padding="16">
             <ItemsControl ItemsSource="{Binding Documents}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -178,7 +371,7 @@
                             <Grid RowDefinitions="180,*,Auto">
                                 <!-- Thumbnail with Preview Button -->
                                 <Grid Grid.Row="0">
-                                    <Image Source="{Binding ThumbnailUrl}" Stretch="UniformToFill" 
+                                    <Image Source="{Binding ThumbnailUrl}" Stretch="UniformToFill"
                                           ClipToBounds="True"/>
                                     <Border Background="Black" Opacity="0.3" Visibility="Hidden" x:Name="ImageOverlay"/>
                                     <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
@@ -191,11 +384,11 @@
                                            HorizontalAlignment="Right" VerticalAlignment="Top" Margin="8"
                                            Opacity="0.9">
                                         <StackPanel Orientation="Horizontal" Spacing="4">
-                                            <materialDesign:PackIcon Kind="FileDocument" Width="12" Height="12" 
+                                            <materialDesign:PackIcon Kind="FileDocument" Width="12" Height="12"
                                                                     Foreground="{StaticResource Gray600Brush}"/>
-                                            <TextBlock Text="{Binding PageCount}" FontSize="10" 
+                                            <TextBlock Text="{Binding PageCount}" FontSize="10"
                                                       Foreground="{StaticResource Gray600Brush}"/>
-                                            <TextBlock Text="pages" FontSize="10" 
+                                            <TextBlock Text="pages" FontSize="10"
                                                       Foreground="{StaticResource Gray600Brush}"/>
                                         </StackPanel>
                                     </Border>
@@ -206,19 +399,19 @@
                                     <TextBlock Text="{Binding Title}" Style="{StaticResource BodyLargeStyle}"
                                              FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
                                              MaxHeight="44" TextWrapping="Wrap" LineHeight="22"/>
-                                    
+
                                     <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,8,0,0">
                                         <materialDesign:PackIcon Kind="Calendar" Width="14" Height="14"
                                                                 Foreground="{StaticResource Gray400Brush}" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{Binding Created, StringFormat='MMM dd, yyyy'}" 
+                                        <TextBlock Text="{Binding Created, StringFormat='MMM dd, yyyy'}"
                                                   Style="{StaticResource CaptionStyle}" VerticalAlignment="Center"/>
                                     </StackPanel>
-                                    
+
                                     <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,4,0,0"
                                                Visibility="{Binding Correspondent, Converter={StaticResource NullToVisibilityConverter}}">
                                         <materialDesign:PackIcon Kind="Account" Width="14" Height="14"
                                                                 Foreground="{StaticResource Gray400Brush}" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{Binding Correspondent}" Style="{StaticResource CaptionStyle}" 
+                                        <TextBlock Text="{Binding Correspondent}" Style="{StaticResource CaptionStyle}"
                                                   VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
                                     </StackPanel>
                                 </StackPanel>
@@ -232,29 +425,29 @@
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <Border Background="{Binding Color}" CornerRadius="12" 
+                                            <Border Background="{Binding Color}" CornerRadius="12"
                                                    Padding="8,4" Margin="2">
-                                                <TextBlock Text="{Binding Name}" FontSize="11" 
+                                                <TextBlock Text="{Binding Name}" FontSize="11"
                                                           Foreground="White" FontWeight="Medium"/>
                                             </Border>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             </Grid>
-                            
+
                             <!-- Hover Triggers -->
                             <Border.Triggers>
                                 <EventTrigger RoutedEvent="MouseEnter">
                                     <BeginStoryboard>
                                         <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetName="ImageOverlay" 
+                                            <DoubleAnimation Storyboard.TargetName="ImageOverlay"
                                                            Storyboard.TargetProperty="Opacity"
                                                            To="0.3" Duration="0:0:0.2"/>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ImageOverlay" 
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ImageOverlay"
                                                                          Storyboard.TargetProperty="Visibility">
                                                 <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
                                             </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PreviewButton" 
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PreviewButton"
                                                                          Storyboard.TargetProperty="Visibility">
                                                 <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
                                             </ObjectAnimationUsingKeyFrames>
@@ -264,14 +457,14 @@
                                 <EventTrigger RoutedEvent="MouseLeave">
                                     <BeginStoryboard>
                                         <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetName="ImageOverlay" 
+                                            <DoubleAnimation Storyboard.TargetName="ImageOverlay"
                                                            Storyboard.TargetProperty="Opacity"
                                                            To="0" Duration="0:0:0.2"/>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ImageOverlay" 
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ImageOverlay"
                                                                          Storyboard.TargetProperty="Visibility">
                                                 <DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="{x:Static Visibility.Hidden}"/>
                                             </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PreviewButton" 
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PreviewButton"
                                                                          Storyboard.TargetProperty="Visibility">
                                                 <DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="{x:Static Visibility.Hidden}"/>
                                             </ObjectAnimationUsingKeyFrames>
@@ -286,7 +479,7 @@
         </ScrollViewer>
 
         <!-- Pagination -->
-        <Border Grid.Row="5" Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,1,0,0"
+        <Border Grid.Row="7" Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,1,0,0"
                 Padding="24,16">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -294,15 +487,20 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                
+
                 <TextBlock Grid.Column="0" VerticalAlignment="Center" Style="{StaticResource BodySmallStyle}">
-                    <Run Text="Showing 1-20 of"/>
-                    <Run Text="{Binding Documents.Count}" FontWeight="Bold"/>
+                    <Run Text="Showing"/>
+                    <Run Text="{Binding PaginationStart}"/>
+                    <Run Text="-"/>
+                    <Run Text="{Binding PaginationEnd}"/>
+                    <Run Text="of"/>
+                    <Run Text="{Binding FilteredDocumentCount}" FontWeight="Bold"/>
                     <Run Text="documents"/>
                 </TextBlock>
-                
+
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="16">
-                    <Button Style="{StaticResource OutlineButtonStyle}" Height="36" Padding="12,8">
+                    <Button Style="{StaticResource OutlineButtonStyle}" Height="36" Padding="12,8"
+                           Command="{Binding PreviousPageCommand}">
                         <StackPanel Orientation="Horizontal" Spacing="6">
                             <materialDesign:PackIcon Kind="ChevronLeft" Width="16" Height="16" />
                             <TextBlock Text="Previous" FontSize="13"/>
@@ -311,23 +509,25 @@
                     <TextBlock VerticalAlignment="Center" Style="{StaticResource BodySmallStyle}" Margin="8,0">
                         <Run Text="Page"/>
                         <Run Text="{Binding CurrentPage}" FontWeight="Bold"/>
-                        <Run Text="of 5"/>
+                        <Run Text="of"/>
+                        <Run Text="{Binding TotalPages}"/>
                     </TextBlock>
-                    <Button Style="{StaticResource OutlineButtonStyle}" Height="36" Padding="12,8">
+                    <Button Style="{StaticResource OutlineButtonStyle}" Height="36" Padding="12,8"
+                           Command="{Binding NextPageCommand}">
                         <StackPanel Orientation="Horizontal" Spacing="6">
                             <TextBlock Text="Next" FontSize="13"/>
                             <materialDesign:PackIcon Kind="ChevronRight" Width="16" Height="16" />
                         </StackPanel>
                     </Button>
                 </StackPanel>
-                
+
                 <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
                     <TextBlock Text="Per page:" VerticalAlignment="Center" Style="{StaticResource BodySmallStyle}"/>
-                    <ComboBox Width="80" SelectedIndex="1">
-                        <ComboBoxItem>10</ComboBoxItem>
-                        <ComboBoxItem>20</ComboBoxItem>
-                        <ComboBoxItem>50</ComboBoxItem>
-                        <ComboBoxItem>100</ComboBoxItem>
+                    <ComboBox Width="80" SelectedValue="{Binding PageSize}">
+                        <ComboBoxItem Content="10" Tag="10"/>
+                        <ComboBoxItem Content="20" Tag="20" IsSelected="True"/>
+                        <ComboBoxItem Content="50" Tag="50"/>
+                        <ComboBoxItem Content="100" Tag="100"/>
                     </ComboBox>
                 </StackPanel>
             </Grid>
