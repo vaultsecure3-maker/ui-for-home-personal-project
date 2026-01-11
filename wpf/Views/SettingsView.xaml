@@ -4,60 +4,336 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              Background="{StaticResource Gray50Brush}">
 
+    <UserControl.Resources>
+        <Style x:Key="SettingsCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Gray200Brush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="24"/>
+        </Style>
+        <Style x:Key="IconBoxStyle" TargetType="Border">
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="CardHeaderStyle" TargetType="StackPanel">
+            <Setter Property="Spacing" Value="12"/>
+            <Setter Property="Margin" Value="0,0,0,16"/>
+        </Style>
+    </UserControl.Resources>
+
     <Grid RowDefinitions="Auto,*">
+        <!-- Header -->
         <Border Grid.Row="0" Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,0,0,1"
                 Padding="32,24,32,24">
             <StackPanel>
-                <TextBlock Text="Settings" Style="{StaticResource TitleLargeStyle}" />
-                <TextBlock Text="Configure application preferences" Style="{StaticResource BodySmallStyle}"
-                          Margin="0,4,0,0" Foreground="{StaticResource Gray600Brush}" />
+                <TextBlock Text="Settings" Style="{StaticResource TitleLargeStyle}" FontSize="24" FontWeight="SemiBold"/>
+                <TextBlock Text="Manage your application preferences and configuration" Style="{StaticResource BodySmallStyle}"
+                          Margin="0,4,0,0" Foreground="{StaticResource Gray600Brush}" FontSize="14"/>
             </StackPanel>
         </Border>
 
+        <!-- Content -->
         <ScrollViewer Grid.Row="1" Padding="32">
-            <StackPanel Width="480" Spacing="32">
-                <!-- Appearance -->
-                <StackPanel Spacing="12">
-                    <TextBlock Text="Appearance" Style="{StaticResource TitleMediumStyle}" />
-                    <StackPanel Spacing="4">
-                        <TextBlock Text="Theme" Style="{StaticResource CaptionStyle}" />
-                        <ComboBox Text="{Binding Theme}" Padding="8,6,8,6">
-                            <ComboBoxItem>Light</ComboBoxItem>
-                            <ComboBoxItem>Dark</ComboBoxItem>
-                        </ComboBox>
-                    </StackPanel>
-                </StackPanel>
+            <StackPanel Width="800" Spacing="24">
 
-                <!-- Sync Settings -->
-                <StackPanel Spacing="12">
-                    <TextBlock Text="Sync Settings" Style="{StaticResource TitleMediumStyle}" />
-                    <StackPanel Spacing="4">
-                        <CheckBox Content="Auto-sync" IsChecked="{Binding AutoSync}" />
-                        <TextBlock Text="Automatically sync documents" Style="{StaticResource CaptionStyle}"
-                                 Foreground="{StaticResource Gray600Brush}" Margin="20,0,0,0" />
-                    </StackPanel>
-                    <StackPanel Spacing="4" Margin="0,8,0,0">
-                        <TextBlock Text="Sync Interval (seconds)" Style="{StaticResource CaptionStyle}" />
-                        <Slider Value="{Binding SyncInterval}" Minimum="30" Maximum="300" Margin="0,4,0,0" />
-                        <TextBlock Text="{Binding SyncInterval}" Style="{StaticResource CaptionStyle}"
-                                 Foreground="{StaticResource Gray600Brush}" />
-                    </StackPanel>
-                </StackPanel>
+                <!-- Server URL Card -->
+                <Border Style="{StaticResource SettingsCardStyle}">
+                    <StackPanel Spacing="16">
+                        <!-- Header -->
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Border Style="{StaticResource IconBoxStyle}" Background="#dbeafe">
+                                <materialDesign:PackIcon Kind="Globe" Width="20" Height="20" Foreground="#2563eb"
+                                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </Border>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Server URL" FontSize="16" FontWeight="SemiBold"/>
+                                <TextBlock Text="Configure your Paperless-NGX server address" FontSize="13"
+                                         Foreground="{StaticResource Gray600Brush}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </StackPanel>
 
-                <!-- About -->
-                <StackPanel Spacing="12" Padding="0,16,0,0" BorderBrush="{StaticResource Gray200Brush}"
-                           BorderThickness="0,1,0,0">
-                    <TextBlock Text="About" Style="{StaticResource TitleMediumStyle}" Margin="0,16,0,0" />
-                    <TextBlock Text="Paperless-NGX Document Manager" Style="{StaticResource BodySmallStyle}" />
-                    <TextBlock Text="Version 1.0.0" Style="{StaticResource CaptionStyle}"
-                             Foreground="{StaticResource Gray600Brush}" />
-                </StackPanel>
+                        <!-- Content -->
+                        <StackPanel Spacing="12">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Server Address" FontSize="13" FontWeight="Medium"/>
+                                <TextBox Height="36" Padding="8,6,8,6" FontSize="13" Foreground="{StaticResource Gray900Brush}"/>
+                                <TextBlock Text="Include http:// or https://" FontSize="11" Foreground="{StaticResource Gray500Brush}"/>
+                            </StackPanel>
 
-                <!-- Save Button -->
-                <Button Style="{StaticResource PrimaryButtonStyle}" Height="40" Margin="0,16,0,0"
-                       Command="{Binding SaveSettingsCommand}">
-                    <TextBlock Text="Save Settings" />
-                </Button>
+                            <Border Background="{StaticResource Gray50Brush}" BorderBrush="{StaticResource Gray200Brush}"
+                                   BorderThickness="1" Padding="16" CornerRadius="8">
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <materialDesign:PackIcon Kind="CheckCircle" Width="20" Height="20" Foreground="#16a34a"/>
+                                            <TextBlock Text="Connected" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <TextBlock Text="Last checked: 2 minutes ago" FontSize="12" Foreground="{StaticResource Gray600Brush}"
+                                                 Margin="28,4,0,0"/>
+                                    </StackPanel>
+                                    <Button Grid.Column="1" Style="{StaticResource OutlineButtonStyle}" Height="36" Padding="16,0,16,0"
+                                           VerticalAlignment="Center">
+                                        <TextBlock Text="Test Connection" FontSize="13"/>
+                                    </Button>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- API Token Card -->
+                <Border Style="{StaticResource SettingsCardStyle}">
+                    <StackPanel Spacing="16">
+                        <!-- Header -->
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Border Style="{StaticResource IconBoxStyle}" Background="#e0e7ff">
+                                <materialDesign:PackIcon Kind="Key" Width="20" Height="20" Foreground="#4f46e5"
+                                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </Border>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="API Authentication" FontSize="16" FontWeight="SemiBold"/>
+                                <TextBlock Text="Secure access token for server communication" FontSize="13"
+                                         Foreground="{StaticResource Gray600Brush}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Content -->
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="API Token" FontSize="13" FontWeight="Medium"/>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBox Height="36" Padding="8,6,8,6" FontSize="13" Foreground="{StaticResource Gray900Brush}"/>
+                                <Button Style="{StaticResource OutlineButtonStyle}" Height="36" Padding="12,0,12,0" Width="60">
+                                    <TextBlock Text="Show" FontSize="13"/>
+                                </Button>
+                            </StackPanel>
+                            <TextBlock Text="Found in your Paperless settings → API" FontSize="11" Foreground="{StaticResource Gray500Brush}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Language Card -->
+                <Border Style="{StaticResource SettingsCardStyle}">
+                    <StackPanel Spacing="16">
+                        <!-- Header -->
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Border Style="{StaticResource IconBoxStyle}" Background="#cffafe">
+                                <materialDesign:PackIcon Kind="Earth" Width="20" Height="20" Foreground="#0891b2"
+                                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </Border>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Language" FontSize="16" FontWeight="SemiBold"/>
+                                <TextBlock Text="Select your preferred language" FontSize="13"
+                                         Foreground="{StaticResource Gray600Brush}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Content -->
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                            <Button Grid.Column="0" Style="{StaticResource PrimaryButtonStyle}" Height="36">
+                                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                    <materialDesign:PackIcon Kind="Earth" Width="16" Height="16"/>
+                                    <TextBlock Text="English (US)"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Grid.Column="1" Style="{StaticResource OutlineButtonStyle}" Height="36">
+                                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                    <materialDesign:PackIcon Kind="Earth" Width="16" Height="16"/>
+                                    <TextBlock Text="Srpski (Serbian)"/>
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Auto-Refresh Card -->
+                <Border Style="{StaticResource SettingsCardStyle}">
+                    <StackPanel Spacing="16">
+                        <!-- Header -->
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Border Style="{StaticResource IconBoxStyle}" Background="#dcfce7">
+                                <materialDesign:PackIcon Kind="Refresh" Width="20" Height="20" Foreground="#16a34a"
+                                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </Border>
+                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                    <StackPanel>
+                                        <TextBlock Text="Auto-Refresh Documents" FontSize="16" FontWeight="SemiBold"/>
+                                        <TextBlock Text="Automatically check for new documents from the server" FontSize="13"
+                                                 Foreground="{StaticResource Gray600Brush}" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                    <CheckBox Grid.Column="1" VerticalAlignment="Center" IsChecked="True"/>
+                                </Grid>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Content -->
+                        <StackPanel Spacing="12">
+                            <StackPanel Spacing="4">
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                    <TextBlock Text="Refresh Interval" FontWeight="Medium"/>
+                                    <TextBlock Grid.Column="1" Text="60 seconds" FontSize="12" Foreground="{StaticResource Gray600Brush}"/>
+                                </Grid>
+                                <Slider Height="4" Minimum="10" Maximum="300" Value="60"/>
+                                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                                    <TextBlock Text="10s (Fast)" FontSize="11" Foreground="{StaticResource Gray500Brush}"/>
+                                    <TextBlock Grid.Column="1" Text="5min (Battery Friendly)" FontSize="11" Foreground="{StaticResource Gray500Brush}"
+                                             HorizontalAlignment="Right"/>
+                                </Grid>
+                            </StackPanel>
+
+                            <Border Background="#f0fdf4" BorderBrush="#bbf7d0" BorderThickness="1" Padding="12" CornerRadius="8">
+                                <StackPanel Spacing="6">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <materialDesign:PackIcon Kind="Info" Width="16" Height="16" Foreground="#16a34a"/>
+                                        <TextBlock Text="Last check: 2 minutes ago" FontSize="12" FontWeight="SemiBold" Foreground="#15803d"/>
+                                    </StackPanel>
+                                    <TextBlock Text="Next check: in 58 seconds" FontSize="12" Foreground="#16a34a" Margin="24,0,0,0"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Voice Commands Card -->
+                <Border Style="{StaticResource SettingsCardStyle}">
+                    <StackPanel Spacing="16">
+                        <!-- Header -->
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Border Style="{StaticResource IconBoxStyle}" Background="#fef3c7">
+                                <materialDesign:PackIcon Kind="Microphone" Width="20" Height="20" Foreground="#b45309"
+                                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </Border>
+                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                    <StackPanel>
+                                        <TextBlock Text="Voice Commands" FontSize="16" FontWeight="SemiBold"/>
+                                        <TextBlock Text="Enable voice control for hands-free operation (English only)" FontSize="13"
+                                                 Foreground="{StaticResource Gray600Brush}" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                    <CheckBox Grid.Column="1" VerticalAlignment="Center" IsChecked="False"/>
+                                </Grid>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Thumbnail Cache Card -->
+                <Border Style="{StaticResource SettingsCardStyle}">
+                    <StackPanel Spacing="16">
+                        <!-- Header -->
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Border Style="{StaticResource IconBoxStyle}" Background="#fed7aa">
+                                <materialDesign:PackIcon Kind="Trash" Width="20" Height="20" Foreground="#d97706"
+                                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </Border>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Thumbnail Cache" FontSize="16" FontWeight="SemiBold"/>
+                                <TextBlock Text="Clear cached thumbnails to free up storage space" FontSize="13"
+                                         Foreground="{StaticResource Gray600Brush}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Content -->
+                        <Border Background="{StaticResource Gray50Brush}" BorderBrush="{StaticResource Gray200Brush}"
+                               BorderThickness="1" Padding="16" CornerRadius="8">
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                <StackPanel>
+                                    <TextBlock Text="Currently using 125 MB" FontWeight="SemiBold"/>
+                                    <TextBlock Text="Last cleared: 3 days ago" FontSize="12" Foreground="{StaticResource Gray600Brush}"
+                                             Margin="0,4,0,0"/>
+                                </StackPanel>
+                                <Button Grid.Column="1" Style="{StaticResource OutlineButtonStyle}" Height="36" Padding="12,0,12,0"
+                                       VerticalAlignment="Center">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <materialDesign:PackIcon Kind="Trash" Width="16" Height="16"/>
+                                        <TextBlock Text="Clear Cache" FontSize="13"/>
+                                    </StackPanel>
+                                </Button>
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <!-- Keyboard Shortcuts Card -->
+                <Border Style="{StaticResource SettingsCardStyle}">
+                    <StackPanel Spacing="16">
+                        <!-- Header -->
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Border Style="{StaticResource IconBoxStyle}" Background="#f1f5f9">
+                                <materialDesign:PackIcon Kind="Keyboard" Width="20" Height="20" Foreground="#64748b"
+                                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </Border>
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" HorizontalAlignment="Stretch">
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="Keyboard Shortcuts" FontSize="16" FontWeight="SemiBold"/>
+                                    <TextBlock Text="Learn all available keyboard shortcuts" FontSize="13"
+                                             Foreground="{StaticResource Gray600Brush}" Margin="0,2,0,0"/>
+                                </StackPanel>
+                                <Button Grid.Column="1" Style="{StaticResource OutlineButtonStyle}" Height="36" Padding="16,0,16,0"
+                                       VerticalAlignment="Center">
+                                    <TextBlock Text="View Shortcuts" FontSize="13"/>
+                                </Button>
+                            </Grid>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- About Card -->
+                <Border Style="{StaticResource SettingsCardStyle}">
+                    <StackPanel Spacing="16">
+                        <!-- Header -->
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Border Style="{StaticResource IconBoxStyle}" Background="#f3f4f6">
+                                <materialDesign:PackIcon Kind="InformationOutline" Width="20" Height="20" Foreground="#6b7280"
+                                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </Border>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="About" FontSize="16" FontWeight="SemiBold"/>
+                                <TextBlock Text="Application and API version information" FontSize="13"
+                                         Foreground="{StaticResource Gray600Brush}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Content -->
+                        <StackPanel Spacing="8">
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                <TextBlock Text="App version:" FontSize="13" Foreground="{StaticResource Gray600Brush}"/>
+                                <TextBlock Grid.Column="1" Text="v1.0.0" FontSize="12" Background="{StaticResource Gray100Brush}"
+                                         Padding="6,4,6,4" CornerRadius="4"/>
+                            </Grid>
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                <TextBlock Text="Paperless-NGX API:" FontSize="13" Foreground="{StaticResource Gray600Brush}"/>
+                                <TextBlock Grid.Column="1" Text="v2.3.0" FontSize="12" Background="{StaticResource Gray100Brush}"
+                                         Padding="6,4,6,4" CornerRadius="4"/>
+                            </Grid>
+                            <TextBlock FontSize="13" Margin="0,8,0,0">
+                                <Hyperlink TextDecorations="None" Foreground="#2563eb">
+                                    View on GitHub →
+                                </Hyperlink>
+                            </TextBlock>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Action Buttons -->
+                <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Right" Margin="0,16,0,16">
+                    <Button Style="{StaticResource OutlineButtonStyle}" Height="40" Padding="24,0,24,0">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <materialDesign:PackIcon Kind="Refresh" Width="16" Height="16"/>
+                            <TextBlock Text="Reset to Defaults"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource PrimaryButtonStyle}" Height="40" Padding="24,0,24,0">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <materialDesign:PackIcon Kind="CheckCircle" Width="16" Height="16"/>
+                            <TextBlock Text="Save All Settings"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
             </StackPanel>
         </ScrollViewer>
     </Grid>
