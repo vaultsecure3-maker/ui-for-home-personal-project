@@ -4,50 +4,140 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              Background="{StaticResource Gray50Brush}">
 
-    <Grid RowDefinitions="Auto,*">
+    <UserControl.Resources>
+        <Style x:Key="StepIndicatorStyle" TargetType="Border">
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="CornerRadius" Value="20"/>
+            <Setter Property="Background" Value="{StaticResource Gray200Brush}"/>
+            <Setter Property="Foreground" Value="{StaticResource Gray500Brush}"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="ActiveStepIndicatorStyle" TargetType="Border" BasedOn="{StaticResource StepIndicatorStyle}">
+            <Setter Property="Background" Value="#2563eb"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+        <Style x:Key="CompletedStepIndicatorStyle" TargetType="Border" BasedOn="{StaticResource StepIndicatorStyle}">
+            <Setter Property="Background" Value="#2563eb"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
+        <!-- Header -->
         <Border Grid.Row="0" Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,0,0,1"
                 Padding="32,24,32,24">
             <StackPanel>
-                <TextBlock Text="Upload" Style="{StaticResource TitleLargeStyle}" />
-                <TextBlock Text="Add new documents to your archive" Style="{StaticResource BodySmallStyle}"
-                          Margin="0,4,0,0" Foreground="{StaticResource Gray600Brush}" />
+                <TextBlock Text="Upload Documents" Style="{StaticResource TitleLargeStyle}" FontSize="24" FontWeight="SemiBold"/>
+                <TextBlock Text="Add new documents to your archive with metadata" Style="{StaticResource BodySmallStyle}"
+                          Margin="0,4,0,0" Foreground="{StaticResource Gray600Brush}" FontSize="14"/>
             </StackPanel>
         </Border>
 
-        <ScrollViewer Grid.Row="1" Padding="32">
-            <StackPanel Spacing="24">
+        <!-- Stepper -->
+        <Border Grid.Row="1" Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,0,0,1"
+                Padding="0,24,0,24">
+            <StackPanel HorizontalAlignment="Center" MaxWidth="500">
+                <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+                    <!-- Step 1 -->
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="8">
+                        <Border Style="{StaticResource ActiveStepIndicatorStyle}">
+                            <TextBlock Text="1" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                     FontWeight="Bold" FontSize="16"/>
+                        </Border>
+                        <TextBlock Text="Select File" HorizontalAlignment="Center" FontSize="12" FontWeight="Medium"/>
+                    </StackPanel>
+
+                    <!-- Separator 1 -->
+                    <TextBlock Grid.Column="1" Text="→" Margin="12,0,12,0" VerticalAlignment="Center"
+                             Foreground="{StaticResource Gray400Brush}" FontSize="16"/>
+
+                    <!-- Step 2 -->
+                    <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="8">
+                        <Border Style="{StaticResource StepIndicatorStyle}">
+                            <TextBlock Text="2" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                     FontWeight="Bold" FontSize="16"/>
+                        </Border>
+                        <TextBlock Text="Add Details" HorizontalAlignment="Center" FontSize="12"/>
+                    </StackPanel>
+
+                    <!-- Separator 2 -->
+                    <TextBlock Grid.Column="3" Text="→" Margin="12,0,12,0" VerticalAlignment="Center"
+                             Foreground="{StaticResource Gray400Brush}" FontSize="16"/>
+
+                    <!-- Step 3 -->
+                    <StackPanel Grid.Column="4" VerticalAlignment="Center" Spacing="8">
+                        <Border Style="{StaticResource StepIndicatorStyle}">
+                            <TextBlock Text="3" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                     FontWeight="Bold" FontSize="16"/>
+                        </Border>
+                        <TextBlock Text="Upload" HorizontalAlignment="Center" FontSize="12"/>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!-- Stats Bar -->
+        <Border Grid.Row="2" Background="{StaticResource Gray50Brush}" BorderBrush="{StaticResource Gray200Brush}"
+                BorderThickness="0,0,0,1" Padding="16,12,16,12">
+            <StackPanel Orientation="Horizontal" Spacing="24">
+                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                    <materialDesign:PackIcon Kind="Upload" Width="16" Height="16" Foreground="{StaticResource Gray500Brush}"/>
+                    <TextBlock Text="No file selected" Foreground="{StaticResource Gray600Brush}" FontSize="13"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Content Area -->
+        <ScrollViewer Grid.Row="3" Padding="24">
+            <StackPanel MaxWidth="600" HorizontalAlignment="Center" Spacing="24">
                 <!-- Drop Zone -->
-                <Border Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="2"
-                       BorderDashArray="5,5" Padding="32" CornerRadius="4">
+                <Border Background="White" BorderBrush="{StaticResource Gray300Brush}" BorderThickness="4"
+                       Padding="48,64,48,64" CornerRadius="8" MouseDown="Border_MouseDown">
                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="16">
-                        <materialDesign:PackIcon Kind="CloudUpload" Width="48" Height="48"
-                                                Foreground="{StaticResource Gray400Brush}"
+                        <materialDesign:PackIcon Kind="CloudUpload" Width="64" Height="64"
+                                                Foreground="#2563eb"
                                                 HorizontalAlignment="Center" />
-                        <TextBlock Text="Drag files here or click to browse" Style="{StaticResource BodySmallStyle}"
-                                 Foreground="{StaticResource Gray600Brush}" HorizontalAlignment="Center" />
+                        <StackPanel HorizontalAlignment="Center" Spacing="4">
+                            <TextBlock Text="Drop files here" FontSize="18" FontWeight="SemiBold"
+                                     HorizontalAlignment="Center"/>
+                            <TextBlock Text="or click to browse" Foreground="{StaticResource Gray600Brush}"
+                                     HorizontalAlignment="Center" FontSize="13"/>
+                            <TextBlock Text="PDF, JPG, PNG (Max 50MB)" Foreground="{StaticResource Gray500Brush}"
+                                     HorizontalAlignment="Center" FontSize="12"/>
+                        </StackPanel>
                     </StackPanel>
                 </Border>
 
-                <!-- Metadata Form -->
-                <StackPanel Spacing="12">
-                    <TextBlock Text="Default Metadata" Style="{StaticResource TitleMediumStyle}" />
-                    <StackPanel Spacing="12">
-                        <StackPanel Spacing="4">
-                            <TextBlock Text="Correspondent" Style="{StaticResource CaptionStyle}" />
-                            <ComboBox Padding="8,6,8,6" />
-                        </StackPanel>
-                        <StackPanel Spacing="4">
-                            <TextBlock Text="Document Type" Style="{StaticResource CaptionStyle}" />
-                            <ComboBox Padding="8,6,8,6" />
-                        </StackPanel>
-                    </StackPanel>
-                </StackPanel>
-
-                <!-- Upload Button -->
-                <Button Style="{StaticResource PrimaryButtonStyle}" Height="40" Padding="24,0,24,0">
-                    <TextBlock Text="Upload Files" />
+                <!-- Browse Button -->
+                <Button Style="{StaticResource PrimaryButtonStyle}" Height="40" Padding="24,0,24,0"
+                       HorizontalAlignment="Center">
+                    <TextBlock Text="Select Files..." />
                 </Button>
             </StackPanel>
         </ScrollViewer>
+
+        <!-- Navigation Buttons -->
+        <Border Grid.Row="4" Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,1,0,0"
+                Padding="24,16,24,16">
+            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
+                <!-- Back Button (hidden initially) -->
+                <Button Grid.Column="1" Style="{StaticResource OutlineButtonStyle}" Height="40" Padding="24,0,24,0"
+                       Visibility="Collapsed">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <materialDesign:PackIcon Kind="ChevronLeft" Width="16" Height="16"/>
+                        <TextBlock Text="Back"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- Next/Upload Button -->
+                <Button Grid.Column="2" Style="{StaticResource PrimaryButtonStyle}" Height="40" Padding="24,0,24,0">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="Next"/>
+                        <materialDesign:PackIcon Kind="ChevronRight" Width="16" Height="16"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
     </Grid>
 </UserControl>
