@@ -40,21 +40,51 @@
 
         <!-- Main Content -->
         <Grid Grid.Row="1" ColumnDefinitions="Auto,*">
-            <!-- Sidebar -->
-            <Border Grid.Column="0" Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,0,1,0"
-                    Effect="{StaticResource MaterialDesignShadowDepth1}">
-                <Grid Width="{Binding SidebarExpanded, Converter={StaticResource BoolToValueConverter}, ConverterParameter='320;80'}"
-                      RowDefinitions="Auto,*,Auto">
+            <!-- Sidebar Container -->
+            <Grid Grid.Column="0">
+                <Border Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,0,1,0"
+                        Effect="{StaticResource MaterialDesignShadowDepth1}">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Width" Value="256"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SidebarExpanded}" Value="False">
+                                    <DataTrigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetProperty="Width" To="80" Duration="0:0:0.3">
+                                                    <DoubleAnimation.EasingFunction>
+                                                        <CubicEase EasingMode="EaseInOut"/>
+                                                    </DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.EnterActions>
+                                    <DataTrigger.ExitActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetProperty="Width" To="256" Duration="0:0:0.3">
+                                                    <DoubleAnimation.EasingFunction>
+                                                        <CubicEase EasingMode="EaseInOut"/>
+                                                    </DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.ExitActions>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
 
-                    <!-- Toggle Button -->
-                    <Button Grid.Row="0" Style="{StaticResource IconButtonStyle}" Margin="20,16"
-                           Command="{Binding ToggleSidebarCommand}" HorizontalAlignment="Left">
-                        <materialDesign:PackIcon Kind="{Binding SidebarExpanded, Converter={StaticResource BoolToValueConverter}, ConverterParameter='ChevronLeft;Menu'}" 
-                                                Width="20" Height="20" />
-                    </Button>
+                    <Grid RowDefinitions="Auto,*,Auto">
+                        <!-- Toggle Button -->
+                        <Button Grid.Row="0" Style="{StaticResource IconButtonStyle}" Margin="20,16"
+                               Command="{Binding ToggleSidebarCommand}" HorizontalAlignment="Left">
+                            <materialDesign:PackIcon Kind="Menu" Width="20" Height="20" />
+                        </Button>
 
-                    <!-- Navigation Items -->
-                    <StackPanel Grid.Row="1" Spacing="4" Padding="16,8">
+                        <!-- Navigation Items -->
+                        <StackPanel Grid.Row="1" Spacing="8" Padding="16">
                         <Button Style="{StaticResource GhostButtonStyle}" Height="48" HorizontalContentAlignment="Left"
                                Command="{Binding NavigateToDocumentsCommand}" Background="{StaticResource Blue50Brush}">
                             <StackPanel Orientation="Horizontal" Spacing="16">
