@@ -4,50 +4,194 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              Background="{StaticResource Gray50Brush}">
 
-    <Grid RowDefinitions="Auto,*">
+    <UserControl.Resources>
+        <Style x:Key="TableHeaderStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource Gray50Brush}"/>
+            <Setter Property="Padding" Value="16,12"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Gray200Brush}"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+        </Style>
+
+        <Style x:Key="TableRowStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Padding" Value="16,12"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Gray200Brush}"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource Gray50Brush}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="ActionButtonStyle" TargetType="Button" BasedOn="{StaticResource IconButtonStyle}">
+            <Setter Property="Width" Value="32"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Padding" Value="4"/>
+            <Setter Property="Foreground" Value="{StaticResource Gray600Brush}"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="{StaticResource Blue600Brush}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
+        <!-- Header -->
         <Border Grid.Row="0" Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,0,0,1"
-                Padding="32,24,32,24">
-            <StackPanel>
-                <TextBlock Text="Correspondents" Style="{StaticResource TitleLargeStyle}" />
-                <TextBlock Text="Manage document correspondents" Style="{StaticResource BodySmallStyle}"
-                          Margin="0,4,0,0" Foreground="{StaticResource Gray600Brush}" />
-            </StackPanel>
+                Padding="32,24">
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="Correspondents" Style="{StaticResource TitleLargeStyle}" />
+                    <TextBlock Text="Manage organizations and individuals who send you documents"
+                              Style="{StaticResource BodySmallStyle}"
+                              Margin="0,4,0,0" Foreground="{StaticResource Gray600Brush}" />
+                </StackPanel>
+                <Button Grid.Column="1" Style="{StaticResource PrimaryButtonStyle}" Height="36" Padding="16,8">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <materialDesign:PackIcon Kind="Plus" Width="16" Height="16" />
+                        <TextBlock Text="New Correspondent" />
+                    </StackPanel>
+                </Button>
+            </Grid>
         </Border>
 
-        <Grid Grid.Row="1" ColumnDefinitions="*,320" Padding="32">
-            <Border Grid.Column="0" Background="White" BorderBrush="{StaticResource Gray200Brush}"
-                   BorderThickness="1" CornerRadius="4" Padding="16">
-                <ListBox ItemsSource="{Binding Correspondents}" SelectedItem="{Binding SelectedCorrespondent}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Border Padding="12" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,0,0,1">
-                                <Grid ColumnDefinitions="16,*,Auto">
-                                    <Ellipse Grid.Column="0" Width="12" Height="12" Fill="{Binding Color}"
-                                           VerticalAlignment="Center" />
-                                    <TextBlock Grid.Column="1" Text="{Binding Name}" Margin="12,0,0,0"
-                                             Style="{StaticResource BodySmallStyle}" VerticalAlignment="Center" />
-                                    <TextBlock Grid.Column="2" Text="{Binding DocumentCount}" Style="{StaticResource CaptionStyle}"
-                                             Foreground="{StaticResource Gray600Brush}" VerticalAlignment="Center" />
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </Border>
+        <!-- Search Bar -->
+        <Border Grid.Row="1" Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,0,0,1"
+                Padding="16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-            <Border Grid.Column="1" Background="White" BorderBrush="{StaticResource Gray200Brush}"
-                   BorderThickness="1" CornerRadius="4" Padding="16" Margin="16,0,0,0">
-                <StackPanel Spacing="12">
-                    <TextBlock Text="Edit Correspondent" Style="{StaticResource TitleMediumStyle}" />
-                    <StackPanel Spacing="4">
-                        <TextBlock Text="Name" Style="{StaticResource CaptionStyle}" />
-                        <TextBox Text="{Binding SelectedCorrespondent.Name}" Padding="8,6,8,6" Style="{StaticResource TextBoxStyle}" />
-                    </StackPanel>
-                    <Button Style="{StaticResource PrimaryButtonStyle}" Height="36" Margin="0,12,0,0">
-                        <TextBlock Text="Save" />
+                <materialDesign:PackIcon Grid.Column="0" Kind="Magnify" Width="20" Height="20"
+                                        Foreground="{StaticResource Gray400Brush}"
+                                        VerticalAlignment="Center" Margin="0,0,8,0" />
+                <TextBox Grid.Column="1" Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
+                        BorderThickness="0" Background="Transparent"
+                        materialDesign:HintAssist.Hint="Search correspondents..."
+                        Foreground="{StaticResource Gray900Brush}"
+                        FontSize="14" VerticalAlignment="Center"/>
+                <Button Grid.Column="2" Style="{StaticResource GhostButtonStyle}"
+                        Width="32" Height="32" Padding="4"
+                        Visibility="{Binding SearchQuery, Converter={StaticResource NullToVisibilityConverter}}"
+                        Command="{Binding ClearSearchCommand}">
+                    <materialDesign:PackIcon Kind="Close" Width="16" Height="16" />
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Controls Bar -->
+        <Border Grid.Row="2" Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,0,0,1"
+                Padding="16">
+            <Grid ColumnDefinitions="*,Auto">
+                <ComboBox Grid.Column="1" Width="140" SelectedValue="{Binding SortOrder}" FontSize="13"
+                         Height="36" Padding="12,8" BorderBrush="{StaticResource Gray200Brush}" Background="White">
+                    <ComboBoxItem Content="Name (A-Z)" Tag="name-asc"/>
+                    <ComboBoxItem Content="Name (Z-A)" Tag="name-desc"/>
+                    <ComboBoxItem Content="Documents" Tag="documents"/>
+                </ComboBox>
+            </Grid>
+        </Border>
+
+        <!-- Table Content -->
+        <Border Grid.Row="3" Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="1" Margin="16">
+            <Grid RowDefinitions="Auto,*">
+                <!-- Table Header -->
+                <Border Grid.Row="0" Style="{StaticResource TableHeaderStyle}">
+                    <Grid ColumnDefinitions="40,*,120,80">
+                        <CheckBox Grid.Column="0" VerticalAlignment="Center" Margin="8,0"/>
+                        <TextBlock Grid.Column="1" Text="Name" Style="{StaticResource BodySmallStyle}"
+                                  FontWeight="Medium" Foreground="{StaticResource Gray700Brush}"/>
+                        <TextBlock Grid.Column="2" Text="Documents" Style="{StaticResource BodySmallStyle}"
+                                  FontWeight="Medium" Foreground="{StaticResource Gray700Brush}"/>
+                        <TextBlock Grid.Column="3" Text="Actions" Style="{StaticResource BodySmallStyle}"
+                                  FontWeight="Medium" Foreground="{StaticResource Gray700Brush}"/>
+                    </Grid>
+                </Border>
+
+                <!-- Table Rows -->
+                <ScrollViewer Grid.Row="1">
+                    <ItemsControl ItemsSource="{Binding FilteredCorrespondents}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource TableRowStyle}">
+                                    <Grid ColumnDefinitions="40,*,120,80">
+                                        <CheckBox Grid.Column="0" VerticalAlignment="Center" Margin="8,0"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding Name}"
+                                                  Style="{StaticResource BodySmallStyle}" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2" Text="{Binding DocumentCount}"
+                                                  Style="{StaticResource BodySmallStyle}" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                                            <Button Style="{StaticResource ActionButtonStyle}"
+                                                   ToolTip="Edit">
+                                                <materialDesign:PackIcon Kind="Pencil" Width="16" Height="16" />
+                                            </Button>
+                                            <Button Style="{StaticResource ActionButtonStyle}"
+                                                   ToolTip="Delete">
+                                                <materialDesign:PackIcon Kind="Delete" Width="16" Height="16" />
+                                            </Button>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
+        <!-- Pagination -->
+        <Border Grid.Row="4" Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,1,0,0"
+                Padding="24,16">
+            <Grid ColumnDefinitions="*,Auto,*">
+                <TextBlock Grid.Column="0" VerticalAlignment="Center" Style="{StaticResource BodySmallStyle}">
+                    <Run Text="Showing"/>
+                    <Run Text="{Binding PaginationStart}"/>
+                    <Run Text="-"/>
+                    <Run Text="{Binding PaginationEnd}"/>
+                    <Run Text="of"/>
+                    <Run Text="{Binding TotalCorrespondents}" FontWeight="Bold"/>
+                    <Run Text="correspondents"/>
+                </TextBlock>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="16" HorizontalAlignment="Center">
+                    <Button Style="{StaticResource OutlineButtonStyle}" Height="36" Padding="12,8"
+                           Command="{Binding PreviousPageCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <materialDesign:PackIcon Kind="ChevronLeft" Width="16" Height="16" />
+                            <TextBlock Text="Previous" FontSize="13"/>
+                        </StackPanel>
+                    </Button>
+                    <TextBlock VerticalAlignment="Center" Style="{StaticResource BodySmallStyle}" Margin="8,0">
+                        <Run Text="Page"/>
+                        <Run Text="{Binding CurrentPage}" FontWeight="Bold"/>
+                        <Run Text="of"/>
+                        <Run Text="{Binding TotalPages}"/>
+                    </TextBlock>
+                    <Button Style="{StaticResource OutlineButtonStyle}" Height="36" Padding="12,8"
+                           Command="{Binding NextPageCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <TextBlock Text="Next" FontSize="13"/>
+                            <materialDesign:PackIcon Kind="ChevronRight" Width="16" Height="16" />
+                        </StackPanel>
                     </Button>
                 </StackPanel>
-            </Border>
-        </Grid>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                    <TextBlock Text="Per page:" VerticalAlignment="Center" Style="{StaticResource BodySmallStyle}"/>
+                    <ComboBox Width="80" SelectedValue="{Binding PageSize}">
+                        <ComboBoxItem Content="10" Tag="10"/>
+                        <ComboBoxItem Content="20" Tag="20" IsSelected="True"/>
+                        <ComboBoxItem Content="50" Tag="50"/>
+                        <ComboBoxItem Content="100" Tag="100"/>
+                    </ComboBox>
+                </StackPanel>
+            </Grid>
+        </Border>
     </Grid>
 </UserControl>
