@@ -83,96 +83,106 @@ export function AppLayout({ children }: { children: ReactNode }) {
         {/* Main Content with Sidebar */}
         <div className="flex flex-1 overflow-hidden">
           {/* Fixed Navigation Rail - Sliding */}
-          <div 
+          <div
             className={cn(
-              "bg-white border-r border-gray-200 flex flex-col justify-between py-4 flex-shrink-0 transition-all duration-300 ease-in-out relative",
+              "bg-white border-r border-gray-200 flex flex-col justify-between py-3 flex-shrink-0 transition-all duration-300 ease-in-out relative",
               sidebarExpanded ? "w-64" : "w-20"
             )}
           >
             {/* Toggle Button */}
             <button
               onClick={() => setSidebarExpanded(!sidebarExpanded)}
-              className="absolute -right-3 top-6 bg-white border border-gray-200 rounded-full p-1 hover:bg-gray-100 transition-colors z-10 shadow-sm"
+              className="absolute -right-3.5 top-8 bg-white border border-gray-300 rounded-full p-1.5 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 z-10 shadow-md hover:shadow-lg"
               aria-label={sidebarExpanded ? "Collapse sidebar" : "Expand sidebar"}
             >
               {sidebarExpanded ? (
-                <ChevronLeft className="h-4 w-4 text-gray-600" />
+                <ChevronLeft className="h-4 w-4 text-gray-700" />
               ) : (
-                <ChevronRight className="h-4 w-4 text-gray-600" />
+                <ChevronRight className="h-4 w-4 text-gray-700" />
               )}
             </button>
 
             {/* Top Section */}
-            <div className="flex flex-col gap-2">
+            <nav className="flex flex-col gap-1">
               {topNavItems.map((item) => {
                 const Icon = item.icon;
                 const active = isActive(item.path);
-                
+
                 return (
                   <Tooltip key={item.path}>
                     <TooltipTrigger asChild>
                       <button
                         onClick={() => navigate(item.path)}
                         className={cn(
-                          'flex items-center h-14 w-full transition-all duration-200 px-4',
-                          'hover:bg-gray-100',
-                          active ? 'bg-blue-600 text-white hover:bg-blue-700' : 'text-gray-700',
-                          sidebarExpanded ? 'justify-start gap-3' : 'flex-col justify-center'
+                          'flex items-center h-12 w-full transition-all duration-200 px-3 rounded-lg mx-1',
+                          'hover:bg-gray-100 active:scale-95',
+                          active
+                            ? 'bg-blue-50 text-blue-600 font-medium hover:bg-blue-100'
+                            : 'text-gray-700 hover:text-gray-900',
+                          sidebarExpanded ? 'justify-start gap-3' : 'justify-center'
                         )}
                         aria-label={item.label}
                         aria-current={active ? 'page' : undefined}
                       >
-                        <Icon className={cn("h-6 w-6", !sidebarExpanded && "mb-1")} />
+                        <Icon className={cn(
+                          "h-5 w-5 transition-colors duration-200",
+                          active && "text-blue-600"
+                        )} />
                         <span className={cn(
-                          "text-xs transition-opacity duration-200",
-                          sidebarExpanded ? "opacity-100 text-sm font-medium" : "opacity-100"
+                          "text-sm transition-all duration-200 whitespace-nowrap",
+                          sidebarExpanded ? "opacity-100" : "opacity-0 hidden"
                         )}>
                           {item.label}
                         </span>
                       </button>
                     </TooltipTrigger>
                     {!sidebarExpanded && (
-                      <TooltipContent side="right">
-                        <p>{item.label}</p>
+                      <TooltipContent side="right" delayDuration={200}>
+                        <p className="font-medium">{item.label}</p>
                       </TooltipContent>
                     )}
                   </Tooltip>
                 );
               })}
-            </div>
+            </nav>
 
             {/* Bottom Section */}
-            <div className="flex flex-col gap-2">
+            <nav className="flex flex-col gap-1">
               {/* Settings */}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button
                     onClick={() => navigate('/settings')}
                     className={cn(
-                      'flex items-center h-14 w-full transition-all px-4',
-                      'hover:bg-gray-100',
-                      isActive('/settings') ? 'bg-blue-600 text-white hover:bg-blue-700' : 'text-gray-700',
-                      sidebarExpanded ? 'justify-start gap-3' : 'flex-col justify-center'
+                      'flex items-center h-12 w-full transition-all duration-200 px-3 rounded-lg mx-1',
+                      'hover:bg-gray-100 active:scale-95',
+                      isActive('/settings')
+                        ? 'bg-blue-50 text-blue-600 font-medium hover:bg-blue-100'
+                        : 'text-gray-700 hover:text-gray-900',
+                      sidebarExpanded ? 'justify-start gap-3' : 'justify-center'
                     )}
                     aria-label="Settings"
                     aria-current={isActive('/settings') ? 'page' : undefined}
                   >
-                    <Settings className={cn("h-6 w-6", !sidebarExpanded && "mb-1")} />
+                    <Settings className={cn(
+                      "h-5 w-5 transition-colors duration-200",
+                      isActive('/settings') && "text-blue-600"
+                    )} />
                     <span className={cn(
-                      "text-xs transition-opacity duration-200",
-                      sidebarExpanded ? "opacity-100 text-sm font-medium" : "opacity-100"
+                      "text-sm transition-all duration-200 whitespace-nowrap",
+                      sidebarExpanded ? "opacity-100" : "opacity-0 hidden"
                     )}>
                       Settings
                     </span>
                   </button>
                 </TooltipTrigger>
                 {!sidebarExpanded && (
-                  <TooltipContent side="right">
-                    <p>Settings</p>
+                  <TooltipContent side="right" delayDuration={200}>
+                    <p className="font-medium">Settings</p>
                   </TooltipContent>
                 )}
               </Tooltip>
-            </div>
+            </nav>
           </div>
 
           {/* Main Content Area */}
