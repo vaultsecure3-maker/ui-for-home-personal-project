@@ -1,0 +1,53 @@
+<UserControl x:Class="DocumentManagement.Views.Controls.Pagination"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+
+    <Border Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,1,0,0"
+            Padding="24,16">
+        <Grid ColumnDefinitions="*,Auto,*">
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" Style="{StaticResource BodySmallStyle}">
+                <Run Text="Showing"/>
+                <Run Text="{Binding PaginationStart}"/>
+                <Run Text="-"/>
+                <Run Text="{Binding PaginationEnd}"/>
+                <Run Text="of"/>
+                <Run Text="{Binding Total}" FontWeight="Bold"/>
+                <Run Text="{Binding ItemLabel}"/>
+            </TextBlock>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="16" HorizontalAlignment="Center">
+                <Button Style="{StaticResource OutlineButtonStyle}" Height="36" Padding="12,8"
+                       Command="{Binding PreviousPageCommand}">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <materialDesign:PackIcon Kind="ChevronLeft" Width="16" Height="16" />
+                        <TextBlock Text="Previous" FontSize="13"/>
+                    </StackPanel>
+                </Button>
+                <TextBlock VerticalAlignment="Center" Style="{StaticResource BodySmallStyle}" Margin="8,0">
+                    <Run Text="Page"/>
+                    <Run Text="{Binding CurrentPage}" FontWeight="Bold"/>
+                    <Run Text="of"/>
+                    <Run Text="{Binding TotalPages}"/>
+                </TextBlock>
+                <Button Style="{StaticResource OutlineButtonStyle}" Height="36" Padding="12,8"
+                       Command="{Binding NextPageCommand}">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock Text="Next" FontSize="13"/>
+                        <materialDesign:PackIcon Kind="ChevronRight" Width="16" Height="16" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+
+            <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                <TextBlock Text="Per page:" VerticalAlignment="Center" Style="{StaticResource BodySmallStyle}"/>
+                <ComboBox Width="80" SelectedValue="{Binding PageSize}">
+                    <ComboBoxItem Content="10" Tag="10"/>
+                    <ComboBoxItem Content="20" Tag="20" IsSelected="True"/>
+                    <ComboBoxItem Content="50" Tag="50"/>
+                    <ComboBoxItem Content="100" Tag="100"/>
+                </ComboBox>
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>
