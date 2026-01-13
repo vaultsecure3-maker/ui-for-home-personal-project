@@ -2,6 +2,7 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:controls="clr-namespace:DocumentManagement.Views.Controls"
              Background="{StaticResource Gray50Brush}">
 
     <UserControl.Resources>
@@ -90,7 +91,7 @@
         </Style>
     </UserControl.Resources>
 
-    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,*,Auto">
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
         <!-- Header -->
         <Border Grid.Row="0" Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,0,0,1"
                 Padding="32,24">
@@ -128,237 +129,11 @@
             </Grid>
         </Border>
 
-        <!-- Controls Bar -->
-        <Border Grid.Row="2" Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,0,0,1"
-                Padding="16">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-
-                <!-- Left: Filters -->
-                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
-                    <Button Style="{StaticResource FilterButtonStyle}" Command="{Binding ToggleFiltersCommand}">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <materialDesign:PackIcon Kind="FilterVariant" Width="16" Height="16" />
-                            <TextBlock Text="Filters" Style="{StaticResource BodySmallStyle}" />
-                            <Border Background="{StaticResource Blue600Brush}" CornerRadius="10" Padding="6,2" Margin="4,0,0,0"
-                                   Visibility="{Binding HasActiveFilters, Converter={StaticResource BoolToVisibilityConverter}}">
-                                <TextBlock Text="{Binding ActiveFilterCount}" Foreground="White" FontSize="10" FontWeight="Bold"/>
-                            </Border>
-                        </StackPanel>
-                    </Button>
-                    <Button Style="{StaticResource FilterButtonStyle}" Command="{Binding ClearFiltersCommand}"
-                           Visibility="{Binding HasActiveFilters, Converter={StaticResource BoolToVisibilityConverter}}">
-                        <TextBlock Text="Clear all" Style="{StaticResource BodySmallStyle}" />
-                    </Button>
-                </StackPanel>
-
-                <!-- Right: View Toggle & Sort -->
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12">
-                    <Border BorderBrush="{StaticResource Gray200Brush}" BorderThickness="1" CornerRadius="4">
-                        <StackPanel Orientation="Horizontal">
-                            <ToggleButton Style="{StaticResource ViewToggleStyle}"
-                                         IsChecked="{Binding IsCardView}"
-                                         ToolTip="Card view" BorderThickness="0,0,1,0">
-                                <materialDesign:PackIcon Kind="ViewAgenda" Width="18" Height="18" />
-                            </ToggleButton>
-                            <ToggleButton Style="{StaticResource ViewToggleStyle}"
-                                         IsChecked="{Binding IsTableView}"
-                                         ToolTip="Table view" BorderThickness="0">
-                                <materialDesign:PackIcon Kind="ViewList" Width="18" Height="18" />
-                            </ToggleButton>
-                        </StackPanel>
-                    </Border>
-
-                    <ComboBox Width="180" SelectedValue="{Binding SortOrder}"
-                             Style="{StaticResource FilterComboBoxStyle}">
-                        <ComboBoxItem Content="Date (Newest)" Tag="date-newest"/>
-                        <ComboBoxItem Content="Date (Oldest)" Tag="date-oldest"/>
-                        <ComboBoxItem Content="Title (A-Z)" Tag="title-asc"/>
-                        <ComboBoxItem Content="Title (Z-A)" Tag="title-desc"/>
-                    </ComboBox>
-                </StackPanel>
-            </Grid>
-        </Border>
-
-        <!-- Collapsible Filter Bar -->
-        <Border Grid.Row="3" Background="{StaticResource Gray50Brush}"
-                BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,0,0,1"
-                Padding="16"
-                Visibility="{Binding ShowFilters, Converter={StaticResource BoolToVisibilityConverter}}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-
-                <!-- Keyword Search -->
-                <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                    <TextBlock Text="Contains Word" Style="{StaticResource CaptionStyle}"
-                              FontWeight="Medium" Foreground="{StaticResource Gray700Brush}" Margin="0,0,0,8"/>
-                    <Grid>
-                        <materialDesign:PackIcon Kind="Magnify" Width="16" Height="16"
-                                                Foreground="{StaticResource Gray400Brush}"
-                                                VerticalAlignment="Center" HorizontalAlignment="Left"
-                                                Margin="10,0,0,0"/>
-                        <TextBox Text="{Binding KeywordSearch, UpdateSourceTrigger=PropertyChanged}"
-                                Style="{StaticResource FilterInputStyle}"
-                                materialDesign:HintAssist.Hint="Search in content..."/>
-                        <Button Style="{StaticResource GhostButtonStyle}"
-                               Width="24" Height="24" Padding="2"
-                               HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,6,0"
-                               Visibility="{Binding KeywordSearch, Converter={StaticResource NullToVisibilityConverter}}"
-                               Command="{Binding ClearKeywordSearchCommand}">
-                            <materialDesign:PackIcon Kind="Close" Width="12" Height="12" />
-                        </Button>
-                    </Grid>
-                </StackPanel>
-
-                <!-- Tags Filter -->
-                <StackPanel Grid.Column="1" Margin="8,0">
-                    <TextBlock Text="Tags" Style="{StaticResource CaptionStyle}"
-                              FontWeight="Medium" Foreground="{StaticResource Gray700Brush}" Margin="0,0,0,8"/>
-                    <ComboBox Style="{StaticResource FilterComboBoxStyle}"
-                             ItemsSource="{Binding AvailableTags}"
-                             DisplayMemberPath="Name"
-                             SelectedValuePath="Id"
-                             materialDesign:HintAssist.Hint="Select tags...">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <materialDesign:PackIcon Kind="Check" Width="16" Height="16"
-                                                            Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                                    <Ellipse Width="12" Height="12" Fill="{Binding Color}"/>
-                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding DocumentCount}"
-                                              Style="{StaticResource CaptionStyle}"
-                                              Foreground="{StaticResource Gray500Brush}"
-                                              VerticalAlignment="Center" Margin="4,0,0,0"/>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                </StackPanel>
-
-                <!-- Correspondents Filter -->
-                <StackPanel Grid.Column="2" Margin="8,0">
-                    <TextBlock Text="Correspondents" Style="{StaticResource CaptionStyle}"
-                              FontWeight="Medium" Foreground="{StaticResource Gray700Brush}" Margin="0,0,0,8"/>
-                    <ComboBox Style="{StaticResource FilterComboBoxStyle}"
-                             ItemsSource="{Binding AvailableCorrespondents}"
-                             DisplayMemberPath="Name"
-                             SelectedValuePath="Id"
-                             materialDesign:HintAssist.Hint="Select correspondents...">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <materialDesign:PackIcon Kind="Check" Width="16" Height="16"
-                                                            Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                                    <Ellipse Width="12" Height="12" Fill="{Binding Color}"/>
-                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding DocumentCount}"
-                                              Style="{StaticResource CaptionStyle}"
-                                              Foreground="{StaticResource Gray500Brush}"
-                                              VerticalAlignment="Center" Margin="4,0,0,0"/>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                </StackPanel>
-
-                <!-- Document Types Filter -->
-                <StackPanel Grid.Column="3" Margin="8,0,0,0">
-                    <TextBlock Text="Document Types" Style="{StaticResource CaptionStyle}"
-                              FontWeight="Medium" Foreground="{StaticResource Gray700Brush}" Margin="0,0,0,8"/>
-                    <ComboBox Style="{StaticResource FilterComboBoxStyle}"
-                             ItemsSource="{Binding AvailableDocumentTypes}"
-                             DisplayMemberPath="Name"
-                             SelectedValuePath="Id"
-                             materialDesign:HintAssist.Hint="Select types...">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <materialDesign:PackIcon Kind="Check" Width="16" Height="16"
-                                                            Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                                    <Ellipse Width="12" Height="12" Fill="{Binding Color}"/>
-                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding DocumentCount}"
-                                              Style="{StaticResource CaptionStyle}"
-                                              Foreground="{StaticResource Gray500Brush}"
-                                              VerticalAlignment="Center" Margin="4,0,0,0"/>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                </StackPanel>
-            </Grid>
-        </Border>
-
-        <!-- Stats Bar -->
-        <Border Grid.Row="4" Background="{StaticResource Gray50Brush}"
-                BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,0,0,1"
-                Padding="16">
-            <StackPanel Orientation="Horizontal" Spacing="24">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <materialDesign:PackIcon Kind="FileDocument" Width="16" Height="16"
-                                            Foreground="{StaticResource Gray600Brush}" VerticalAlignment="Center" />
-                    <TextBlock Style="{StaticResource BodySmallStyle}">
-                        <Run Text="{Binding FilteredDocumentCount}" FontWeight="Bold" Foreground="{StaticResource Gray900Brush}" />
-                        <Run Text="documents" />
-                        <Run Text="{Binding FilteredFromText}" Foreground="{StaticResource Gray600Brush}"/>
-                    </TextBlock>
-                </StackPanel>
-                <Border Background="{StaticResource Gray200Brush}" CornerRadius="12" Padding="8,4"
-                       Visibility="{Binding HasActiveFilters, Converter={StaticResource BoolToVisibilityConverter}}">
-                    <TextBlock Style="{StaticResource CaptionStyle}" FontSize="11">
-                        <Run Text="{Binding SearchQuery, Converter={StaticResource NullToVisibilityConverter}}" />
-                        <Run Text="Quick search active" Visibility="{Binding SearchQuery, Converter={StaticResource NullToVisibilityConverter}}"/>
-                        <Run Text=" • " Visibility="{Binding ShowFilterSeparator, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                        <Run Text="{Binding ActiveFilterCount}" />
-                        <Run Text="filter" Visibility="{Binding HasActiveFilters, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                        <Run Text="s" Visibility="{Binding HasMultipleFilters, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                    </TextBlock>
-                </Border>
-            </StackPanel>
-        </Border>
-
-        <!-- Active Filter Chips -->
-        <Border Grid.Row="5" Background="{StaticResource Gray50Brush}"
-                BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,0,0,1"
-                Padding="12"
-                Visibility="{Binding HasActiveFilters, Converter={StaticResource BoolToVisibilityConverter}}">
-            <ItemsControl ItemsSource="{Binding ActiveFilterChips}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel Orientation="Horizontal"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border Style="{StaticResource FilterChipStyle}">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <TextBlock Text="{Binding Label}" Style="{StaticResource CaptionStyle}"
-                                          Foreground="{StaticResource Gray700Brush}" VerticalAlignment="Center"/>
-                                <Button Style="{StaticResource GhostButtonStyle}"
-                                       Width="16" Height="16" Padding="0"
-                                       Command="{Binding RemoveCommand}"
-                                       Background="{StaticResource Gray300Brush}"
-                                       CornerRadius="8">
-                                    <materialDesign:PackIcon Kind="Close" Width="10" Height="10" />
-                                </Button>
-                            </StackPanel>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </Border>
+        <!-- Filter Control -->
+        <controls:FilterControl Grid.Row="2" DataContext="{Binding}" />
 
         <!-- Content Area - Card View -->
-        <ScrollViewer Grid.Row="6" Background="{StaticResource Gray50Brush}" Padding="16">
+        <ScrollViewer Grid.Row="2" Background="{StaticResource Gray50Brush}" Padding="16">
             <ItemsControl ItemsSource="{Binding Documents}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -608,7 +383,7 @@
         </ScrollViewer>
 
         <!-- Pagination -->
-        <Border Grid.Row="7" Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,1,0,0"
+        <Border Grid.Row="3" Background="White" BorderBrush="{StaticResource Gray200Brush}" BorderThickness="0,1,0,0"
                 Padding="24,16">
             <Grid>
                 <Grid.ColumnDefinitions>
